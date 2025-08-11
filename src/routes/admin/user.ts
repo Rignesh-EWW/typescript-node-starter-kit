@@ -1,17 +1,23 @@
 import { Router } from "express";
-import { getAllUsersHandler } from "@/routes/admin/user.controller";
+import {
+  getAllUsersHandler,
+  updateUserHandler,
+  toggleUserStatusHandler,
+  deleteUserHandler,
+  createUserHandler,
+} from "@/controllers/admin/user.controller";
 import { requireAdminAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
 import {
   UpdateUserParamSchema,
   UpdateUserBodySchema,
+  CreateUserBodySchema,
 } from "@/requests/admin/user.request";
-import { updateUserHandler } from "@/routes/admin/user.controller";
 import validateRequest from "@/middlewares/validateRequest";
-import { ToggleUserParamSchema } from "@/requests/admin/user.request";
-import { toggleUserStatusHandler } from "@/routes/admin/user.controller";
-import { DeleteUserParamSchema } from "@/requests/admin/user.request";
-import { deleteUserHandler } from "@/routes/admin/user.controller";
+import {
+  ToggleUserParamSchema,
+  DeleteUserParamSchema,
+} from "@/requests/admin/user.request";
 
 const router = Router();
 
@@ -20,6 +26,13 @@ router.get(
   logRoute("ADMIN_USER_LIST"),
   requireAdminAuth,
   getAllUsersHandler
+);
+router.post(
+  "/users/create",
+  logRoute("ADMIN_USER_CREATE"),
+  requireAdminAuth,
+  validateRequest({ body: CreateUserBodySchema }),
+  createUserHandler
 );
 router.post(
   "/users/:id/update",

@@ -1,0 +1,71 @@
+{
+  "messages": {
+    "address": {
+      "addressList": "पते की सूची",
+      "addressAddFailed": "पता जोड़ने में विफल",
+      "addressAddSuccess": "पता सफलतापूर्वक जोड़ा गया",
+      "addressNotFound": "पता नहीं मिला",
+      "addressDefault": "डिफ़ॉल्ट पता हटाया नहीं गया",
+      "addressDeleteSuccess": "पता सफलतापूर्वक हटाया गया",
+      "addressUpdateFailed": "पता अपडेट करने में विफल",
+      "addressUpdateSuccess": "पता सफलतापूर्वक अपडेट किया गया",
+      "addressDeleteFailed": "पता हटाने में विफल",
+      "addressDefaultSet": "डिफ़ॉल्ट पता सफलतापूर्वक सेट किया गया"
+    },
+    "auth": {
+      "emailExists": "ईमेल पहले से मौजूद है",
+      "phoneExists": "फोन नंबर पहले से मौजूद है",
+      "userNotFound": "उपयोगकर्ता नहीं मिला",
+      "invalidCredentials": "अमान्य प्रमाण-पत्र",
+      "registered": "उपयोगकर्ता सफलतापूर्वक पंजीकृत",
+      "login": "लॉगिन सफल",
+      "OTPSent": "OTP आपके फ़ोन नंबर पर भेजा गया है।",
+      "invalidOTP": "अमान्य OTP",
+      "OTPVerified": "OTP सत्यापित",
+      "linkInvalidORExpired": "लिंक अमान्य है या समाप्त हो गया है।",
+      "passwordResetSuccess": "पासवर्ड सफलतापूर्वक रीसेट किया गया।",
+      "invalidImage": "अमान्य इमेज फॉर्मेट। कृपया सही इमेज फ़ाइल अपलोड करें।",
+      "linkSent": "लिंक आपके ईमेल पर भेजा गया।"
+    },
+    "card": {
+      "cardListFetch": "कार्ड सूची सफलतापूर्वक प्राप्त हुई",
+      "cardAddFailed": "कार्ड जोड़ने में विफल",
+      "cardAddSuccess": "कार्ड सफलतापूर्वक जोड़ा गया",
+      "cardNotFound": "कार्ड नहीं मिला",
+      "cardDeleteDefault": "कार्ड नहीं हटाया गया, यह डिफ़ॉल्ट कार्ड है",
+      "cardDeleteFailed": "कार्ड हटाने में विफल",
+      "cardDeleteSuccess": "कार्ड सफलतापूर्वक हटाया गया",
+      "setDefaultCardSuccess": "डिफ़ॉल्ट कार्ड सफलतापूर्वक सेट किया गया"
+    },
+    "common": {
+      "unauthorized": "अनधिकृत पहुँच",
+      "userNotFound": "उपयोगकर्ता नहीं मिला",
+      "logoutSuccess": "लॉगआउट सफल",
+      "clearNotifications": "सभी सूचनाएँ साफ़ कर दी गईं"
+    },
+    "notification": {
+      "listFetch": "सूचनाओं की सूची प्राप्त की जा रही है"
+    },
+    "password": {
+      "tooManyAttempts": "बहुत अधिक प्रयास। कृपया बाद में पुनः प्रयास करें।",
+      "userNotFound": "उपयोगकर्ता नहीं मिला।",
+      "incorrectPassword": "गलत पासवर्ड।",
+      "passwordChanged": "पासवर्ड सफलतापूर्वक बदल दिया गया है।",
+      "invalidToken": "अमान्य टोकन।"
+    },
+    "profile": {
+      "getProfileSuccess": "प्रोफ़ाइल सफलतापूर्वक प्राप्त की गई",
+      "userNotFound": "उपयोगकर्ता नहीं मिला",
+      "emailAlreadyInUse": "ईमेल पहले से उपयोग में है",
+      "phoneAlreadyInUse": "फ़ोन नंबर पहले से उपयोग में है",
+      "invalidFileFormat": "अमान्य फ़ाइल प्रारूप",
+      "updateProfileSuccess": "प्रोफ़ाइल सफलतापूर्वक अपडेट की गई",
+      "languageUpdatedSuccess": "भाषा सफलतापूर्वक अपडेट की गई",
+      "notificationsUpdatedSuccess": "सूचना सेटिंग्स सफलतापूर्वक अपडेट की गईं"
+    },
+    "wallet": {
+      "transactionList": "वॉलेट लेनदेन की सूची",
+      "topupSuccess": "शीर्षकों की सफलतापूर्वक अपलोड की गई"
+    }
+  }
+}

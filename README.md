@@ -43,6 +43,11 @@ Install the dependencies:
 
 ```bash
 npm install
+npm run prisma:generate
+npm run prisma:migrate
+npm run seed
+npm run prisma:studio (optional)
+npm run dev
 ```
 
 ---
@@ -59,6 +64,7 @@ npm install
 ## ✅ Modules Implemented
 
 ### 👤 Users
+
 - Register/Login
 - OTP + Forgot Password
 - Profile update & change password
@@ -66,6 +72,7 @@ npm install
 - Logout (destroy session)
 
 ### 🧑‍💼 Admin
+
 - Login
 - User management
 - App Settings CRUD
@@ -136,6 +143,7 @@ SESSION_SECRET=mysecret
 ## 🔄 GitHub Actions CI
 
 The `ci.yml` workflow runs tests on every push or PR:
+
 - Spins up PostgreSQL & Redis
 - Runs Prisma migrations
 - Executes Jest + Supertest

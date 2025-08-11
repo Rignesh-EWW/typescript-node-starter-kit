@@ -16,7 +16,7 @@ export const requireUserAuth = (
     if (auth && auth.startsWith("Bearer ")) {
       const token = auth.substring(7);
       const payload = verifyAuthToken<{ id: number; role: string }>(token);
-//       const payload = verifyJwt<{ id: number; role: string }>(token);
+      //       const payload = verifyJwt<{ id: number; role: string }>(token);
       if (payload) {
         user = { id: payload.id, role: payload.role as any };
       }
@@ -24,10 +24,27 @@ export const requireUserAuth = (
   }
 
   if (!user || user.role !== "user") {
-    return res.status(401).json(error(Messages.unauthorized));
+    return res.status(401).json(error(req.translator.t(Messages.unauthorized)));
   }
 
   req.user = user;
+  next();
+};
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json(error(req.translator.t(Messages.unauthorized)));
+  }
+
+  const expectedToken = process.env.AUTH_SECRET_KEY;
+  if (!expectedToken || authHeader !== expectedToken) {
+    return res.status(401).json(error(req.translator.t(Messages.unauthorized)));
+  }
+
   next();
 };
 
@@ -43,7 +60,7 @@ export const requireAdminAuth = (
     if (auth && auth.startsWith("Bearer ")) {
       const token = auth.substring(7);
       const payload = verifyAuthToken<{ id: number; role: string }>(token);
-//       const payload = verifyJwt<{ id: number; role: string }>(token);
+      //       const payload = verifyJwt<{ id: number; role: string }>(token);
       if (payload) {
         user = { id: payload.id, role: payload.role as any };
       }

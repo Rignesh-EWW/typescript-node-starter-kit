@@ -11,8 +11,16 @@ async function main() {
   // Admins
   await prisma.admin.createMany({
     data: [
-      { name: "Admin One", email: "admin1@example.com", password: hashedPassword },
-      { name: "Admin Two", email: "admin2@example.com", password: hashedPassword },
+      {
+        name: "Admin One",
+        email: "admin1@example.com",
+        password: hashedPassword,
+      },
+      {
+        name: "Admin Two",
+        email: "admin2@example.com",
+        password: hashedPassword,
+      },
     ],
   });
 
@@ -22,6 +30,7 @@ async function main() {
       data: {
         name: `User ${i}`,
         email: `user${i}@mail.com`,
+        phone: `12345678${i}`,
         password: hashedPassword,
         status: i % 2 === 0, // alternate status
       },
@@ -59,9 +68,27 @@ async function main() {
   // App Menu Links
   await prisma.appMenuLink.createMany({
     data: [
-      { name: "about_us", show_name: "About Us", for: "user", type: "ckeditor", value: "About our app..." },
-      { name: "terms_and_conditions", show_name: "Terms & Conditions", for: "user", type: "ckeditor", value: "Terms..." },
-      { name: "privacy_policy", show_name: "Privacy Policy", for: "user", type: "ckeditor", value: "Privacy..." },
+      {
+        name: "about_us",
+        show_name: "About Us",
+        for: "user",
+        type: "ckeditor",
+        value: "About our app...",
+      },
+      {
+        name: "terms_and_conditions",
+        show_name: "Terms & Conditions",
+        for: "user",
+        type: "ckeditor",
+        value: "Terms...",
+      },
+      {
+        name: "privacy_policy",
+        show_name: "Privacy Policy",
+        for: "user",
+        type: "ckeditor",
+        value: "Privacy...",
+      },
     ],
   });
 
@@ -70,8 +97,18 @@ async function main() {
   for (const user of users.slice(0, 3)) {
     await prisma.notification.createMany({
       data: [
-        { user_id: user.id, title: "Welcome", message: "Thanks for joining!", read: false },
-        { user_id: user.id, title: "Reminder", message: "Check your profile", read: false },
+        {
+          user_id: user.id,
+          title: "Welcome",
+          message: "Thanks for joining!",
+          read: false,
+        },
+        {
+          user_id: user.id,
+          title: "Reminder",
+          message: "Check your profile",
+          read: false,
+        },
       ],
     });
   }

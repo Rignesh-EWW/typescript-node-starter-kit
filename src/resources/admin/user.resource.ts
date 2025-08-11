@@ -2,6 +2,11 @@ export const formatUserForAdmin = (u: any) => ({
   id: u.id,
   name: u.name,
   email: u.email,
+  phone: u.phone,
+  dob: u.dob,
+  gender: u.gender,
+  wallet_balance: u.wallet_balance,
+  profile_image: u.profile_image,
   created_at: u.created_at,
   status: u.status,
 });

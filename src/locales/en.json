@@ -1,0 +1,71 @@
+{
+  "messages": {
+    "address": {
+      "addressList": "Address list ar",
+      "addressAddFailed": "Address creation failed",
+      "addressAddSuccess": "Address created successfully",
+      "addressNotFound": "Address not found",
+      "addressDefault": "Default address not deleted",
+      "addressDeleteSuccess": "Address deleted successfully",
+      "addressUpdateFailed": "Address update failed",
+      "addressUpdateSuccess": "Address updated successfully",
+      "addressDeleteFailed": "Address deletion failed",
+      "addressDefaultSet": "Default address set successfully"
+    },
+    "auth": {
+      "emailExists": "Email already exists",
+      "phoneExists": "Phone number already exists",
+      "userNotFound": "User not found",
+      "invalidCredentials": "Invalid credentials",
+      "registered": "User registered successfully",
+      "login": "Login successful",
+      "OTPSent": "OTP sent successfully to your phone number.",
+      "invalidOTP": "Invalid OTP",
+      "OTPVerified": "OTP verified",
+      "linkInvalidORExpired": "Link invalid or expired.",
+      "passwordResetSuccess": "Password reset successfully.",
+      "invalidImage": "Invalid image format. Please upload a valid image file.",
+      "linkSent": "Link sent to your email."
+    },
+    "card": {
+      "cardListFetch": "Card list fetch successful",
+      "cardAddFailed": "Card add failed",
+      "cardAddSuccess": "Card add successful",
+      "cardNotFound": "Card not found",
+      "cardDeleteDefault": "Card not deleted, it is default card",
+      "cardDeleteFailed": "Card delete failed",
+      "cardDeleteSuccess": "Card delete successful",
+      "setDefaultCardSuccess": "Default card set successfully"
+    },
+    "common": {
+      "unauthorized": "Unauthorized access",
+      "userNotFound": "User not found",
+      "logoutSuccess": "Logout successful",
+      "clearNotifications": "All notifications cleared"
+    },
+    "notification": {
+      "listFetch": "Fetching list of notifications"
+    },
+    "password": {
+      "tooManyAttempts": "Too many attempts. Please try again later.",
+      "userNotFound": "User not found.",
+      "incorrectPassword": "Incorrect password.",
+      "passwordChanged": "Password changed successfully.",
+      "invalidToken": "Invalid token."
+    },
+    "profile": {
+      "getProfileSuccess": "Profile fetched successfully",
+      "userNotFound": "User not found",
+      "emailAlreadyInUse": "Email already in use",
+      "phoneAlreadyInUse": "Phone number already in use",
+      "invalidFileFormat": "Invalid file format",
+      "updateProfileSuccess": "Profile updated successfully",
+      "languageUpdatedSuccess": "Language updated successfully",
+      "notificationsUpdatedSuccess": "Notification settings updated successfully"
+    },
+    "wallet": {
+      "transactionList": "Wallet Transaction list AR",
+      "topupSuccess": "Topup successful"
+    }
+  }
+}

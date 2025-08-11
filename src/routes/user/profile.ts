@@ -1,10 +1,18 @@
 import { Router } from "express";
-import { getProfile } from "@/routes/user/profile.controller";
+import {
+  getProfile,
+  updateLanguage,
+  updateNotification,
+  updateProfile,
+} from "@/controllers/user/profile.controller";
 import { requireUserAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
 import validateRequest from "@/middlewares/validateRequest";
-import { UpdateProfileRequestSchema } from "@/resources/user/profile.request";
-import { updateProfile } from "@/routes/user/profile.controller";
+import {
+  UpdateLanguageRequestSchema,
+  UpdateNotificationRequestSchema,
+  UpdateProfileRequestSchema,
+} from "@/requests/user/profile.request";
 
 const router = Router();
 
@@ -15,6 +23,21 @@ router.post(
   requireUserAuth,
   validateRequest({ body: UpdateProfileRequestSchema }),
   updateProfile
+);
+router.post(
+  "/update/language",
+  logRoute("USER_UPDATE_LANGUAGE"),
+  requireUserAuth,
+  validateRequest({ body: UpdateLanguageRequestSchema }),
+  updateLanguage
+);
+
+router.post(
+  "/update/notification",
+  logRoute("USER_UPDATE_NOTIFICATION"),
+  requireUserAuth,
+  validateRequest({ body: UpdateNotificationRequestSchema }),
+  updateNotification
 );
 
 export default router;

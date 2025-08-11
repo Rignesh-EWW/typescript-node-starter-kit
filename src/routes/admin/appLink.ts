@@ -1,12 +1,14 @@
 import { Router } from "express";
-import { getAppLinksHandler } from "@/routes/admin/appLink.controller";
+import {
+  getAppLinksHandler,
+  updateAppLinkHandler,
+} from "@/controllers/admin/appLink.controller";
 import { requireAdminAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
 import {
   UpdateAppLinkBodySchema,
   UpdateAppLinkParamSchema,
 } from "@/requests/admin/appLink.request";
-import { updateAppLinkHandler } from "@/routes/admin/appLink.controller";
 import validateRequest from "@/middlewares/validateRequest";
 
 const router = Router();

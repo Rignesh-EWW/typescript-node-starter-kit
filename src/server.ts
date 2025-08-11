@@ -7,6 +7,7 @@ import { logger } from "@/utils/logger";
 import { redisClient } from "@/config/redis.config";
 import RedisStore from "connect-redis";
 import { isProduction } from "@/config/env";
+import { setLocale } from "@/middlewares/locale";
 // import { errorHandler } from "@/middlewares/errorHandler";
 import corsConfig from "@/config/cors.config";
 import sessionConfig from "@/config/session.config";
@@ -27,6 +28,7 @@ import bullBoardRoutes from "@/api/bull.routes";
 import resetViewRoutes from "@/routes/reset.view";
 
 import type { Server } from "http";
+import path from "path";
 
 export const startServer = async (): Promise<Server> => {
   const app = express();
@@ -35,10 +37,7 @@ export const startServer = async (): Promise<Server> => {
   // Try to connect to Redis, but don't fail if it's not available
   let redisStore: any = undefined;
   if (redisClient && isProduction) {
-    if (
-      redisClient.status !== "ready" &&
-      redisClient.status !== "connecting"
-    ) {
+    if (redisClient.status !== "ready" && redisClient.status !== "connecting") {
       await redisClient.connect();
     }
     redisStore = new (RedisStore as any)({ client: redisClient });
@@ -58,7 +57,9 @@ export const startServer = async (): Promise<Server> => {
   app.use(corsConfig);
   app.use(helmet());
   app.use(compression());
-  app.use(express.json());
+  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // app.use(
   //   session({
   //     store: redisStore,
@@ -67,10 +68,11 @@ export const startServer = async (): Promise<Server> => {
   // );
   app.use(requestLogger);
   app.use(globalRateLimiter);
+  app.use(setLocale);
 
   // root route
   app.get("/", (req, res) => {
-    res.status(StatusCode.OK).json(success("Hello World"));
+    res.status(StatusCode.OK).json(success("Hello World !!"));
   });
 
   // Password reset view

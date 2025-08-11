@@ -1,8 +1,9 @@
+// constants/commonMessages.ts
 export const Messages = {
-  unauthorized: "Unauthorized access",
-  userNotFound: "User not found",
-  logoutSuccess: "Logout successful",
-  clearNotifications: "All notifications cleared",
+  unauthorized: "messages.common.unauthorized",
+  userNotFound: "messages.common.userNotFound",
+  logoutSuccess: "messages.common.logoutSuccess",
+  clearNotifications: "messages.common.clearNotifications",
 };
 
 export const AdminMessages = {
