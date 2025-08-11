@@ -1,12 +1,15 @@
 import {
-  PrismaClient,
+  Language,
+  OperationType,
   DeviceType,
   Gender,
-  Language,
-  Prisma,
-  OperationType,
-} from "@prisma/client";
+} from "./../../node_modules/.prisma/client/index.d";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import { User } from "@sentry/node";
+import { hashPassword } from "@utils/hash";
+import { Parser } from "json2csv";
+import XLSX from "xlsx";
 
 const prisma = new PrismaClient();
 
@@ -21,7 +24,7 @@ export const createUser = async (data: {
   device_token: string;
   profile_image: string;
 }) => {
-  const hashedPassword = await bcrypt.hash(data.password, 10);
+  const hashedPassword = await hashPassword(data.password);
   return prisma.user.create({
     data: {
       name: data.name,
@@ -71,7 +74,7 @@ export const updateUserWalletBalance = async (
   amount: number | string,
   operationType: "credit" | "debit"
 ) => {
-  const decimalAmount = new Prisma.Decimal(amount);
+  const decimalAmount = new Decimal(amount);
 
   return prisma.user.update({
     where: { id: userId },
@@ -110,7 +113,7 @@ export const changeUserPassword = async (
   userId: number,
   newPassword: string
 ) => {
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  const hashedPassword = await hashPassword(newPassword);
   return prisma.user.update({
     where: { id: userId },
     data: { password: hashedPassword },

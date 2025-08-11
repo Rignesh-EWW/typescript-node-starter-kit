@@ -1,5 +1,9 @@
+import {
+  Gender,
+  DeviceType,
+} from "./../../../node_modules/.prisma/client/index.d";
+// import { Gender } from "@prisma/client";
 import { z } from "zod";
-import { Gender } from "@prisma/client";
 
 export const CreateUserBodySchema = z.object({
   name: z.string(),
@@ -9,6 +13,8 @@ export const CreateUserBodySchema = z.object({
   gender: z.nativeEnum(Gender),
   profile_image: z.string(),
   password: z.string().min(8),
+  device_type: z.nativeEnum(DeviceType),
+  device_token: z.string(),
 });
 
 export const UpdateUserParamSchema = z.object({
