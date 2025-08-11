@@ -5,4 +5,4 @@ import { logRoute } from "@/decorators/logRoute";
 
 const router = Router();
 
-router.get("/", []);
+// router.get("/", []);

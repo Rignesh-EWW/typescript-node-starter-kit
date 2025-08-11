@@ -1,10 +1,11 @@
 import {
-  Language,
-  OperationType,
+  PrismaClient,
   DeviceType,
   Gender,
-} from "./../../node_modules/.prisma/client/index.d";
-import { PrismaClient, Prisma } from "@prisma/client";
+  Language,
+  Prisma,
+  OperationType,
+} from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { User } from "@sentry/node";
 import { hashPassword } from "@utils/hash";
@@ -74,7 +75,7 @@ export const updateUserWalletBalance = async (
   amount: number | string,
   operationType: "credit" | "debit"
 ) => {
-  const decimalAmount = new Decimal(amount);
+  const decimalAmount = new Prisma.Decimal(amount);
 
   return prisma.user.update({
     where: { id: userId },

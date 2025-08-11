@@ -221,3 +221,4 @@ model Notification {
   user       User     @relation(fields: [user_id], references: [id])
 }
 
+
