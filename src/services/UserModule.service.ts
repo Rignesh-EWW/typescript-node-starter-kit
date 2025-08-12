@@ -9,49 +9,25 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { hashPassword } from "@/utils/hash";
 import { Parser } from "json2csv";
 import XLSX from "xlsx";
-import multer from "multer";
 import path from "path";
-import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
+import {
+  profileImageUpload,
+  deleteFile,
+  getFileExtension,
+  validateFile,
+} from "./multer.service";
 
 const prisma = new PrismaClient();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), "uploads", "profile_images");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(
-      file.originalname
-    )}`;
-    cb(null, uniqueName);
-  },
-});
+// Export the multer upload for backward compatibility
+export const upload = profileImageUpload;
 
-const fileFilter = (
-  req: any,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback
-) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed"));
-  }
+export const getUserById = async (id: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+  return user;
 };
-
-export const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
-});
 
 export interface CreateUserData {
   name: string;
@@ -204,17 +180,7 @@ export const updateUserById = async (
     if (file || data.profile_image) {
       // Delete old profile image if it exists
       if (existingUser.profile_image) {
-        const oldImagePath = path.join(
-          process.cwd(),
-          existingUser.profile_image
-        );
-        if (fs.existsSync(oldImagePath)) {
-          try {
-            fs.unlinkSync(oldImagePath);
-          } catch (err) {
-            console.error(`Failed to delete old profile image: ${err}`);
-          }
-        }
+        await deleteFile(existingUser.profile_image);
       }
 
       // Set new profile image path
@@ -436,34 +402,17 @@ export const generateExportFileName = (type: "csv" | "xlsx") => {
   return `users_export_${dateStr}.${type}`;
 };
 
-// Helper function to delete profile image file
+// Helper function to delete profile image file (using multer service)
 export const deleteProfileImage = async (imagePath: string | null) => {
-  if (!imagePath) return;
-
-  try {
-    const fullPath = path.join(process.cwd(), imagePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-      console.log(`Deleted profile image: ${imagePath}`);
-    }
-  } catch (error) {
-    console.error(`Failed to delete profile image ${imagePath}:`, error);
-  }
+  await deleteFile(imagePath);
 };
 
-// Helper function to get file extension from mimetype
-export const getFileExtension = (mimetype: string): string => {
-  const extensions: { [key: string]: string } = {
-    "image/jpeg": ".jpg",
-    "image/jpg": ".jpg",
-    "image/png": ".png",
-    "image/gif": ".gif",
-    "image/webp": ".webp",
-  };
-  return extensions[mimetype] || ".jpg";
+// Helper function to get file extension from mimetype (using multer service)
+export const getFileExtensionFromMime = (mimetype: string): string => {
+  return getFileExtension(mimetype);
 };
 
-// Helper function to validate image file
+// Helper function to validate image file (using multer service)
 export const validateImageFile = (file: Express.Multer.File): boolean => {
   const allowedMimes = [
     "image/jpeg",
@@ -474,5 +423,5 @@ export const validateImageFile = (file: Express.Multer.File): boolean => {
   ];
   const maxSize = 5 * 1024 * 1024; // 5MB
 
-  return allowedMimes.includes(file.mimetype) && file.size <= maxSize;
+  return validateFile(file, allowedMimes, maxSize);
 };

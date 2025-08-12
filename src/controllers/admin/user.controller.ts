@@ -6,6 +6,7 @@ import {
   softDeleteUser,
   createUser,
   upload,
+  getUserById,
 } from "@/services/UserModule.service";
 import {
   formatUserListForAdmin,
@@ -18,6 +19,7 @@ import {
   DeleteUserParamSchema,
   ToggleUserParamSchema,
   CreateUserBodySchema,
+  GetUserParamSchema,
 } from "@/requests/admin/user.request";
 import {
   logUserUpdated,
@@ -30,6 +32,14 @@ export const getAllUsersHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const users = await getAllUsers();
     return res.json(success("Users fetched", formatUserListForAdmin(users)));
+  }
+);
+
+export const getUserByIdHandler = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = GetUserParamSchema.parse(req.params);
+    const user = await getUserById(Number(id));
+    return res.json(success("User fetched", formatUserForAdmin(user)));
   }
 );
 
