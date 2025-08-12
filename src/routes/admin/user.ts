@@ -31,7 +31,7 @@ router.post(
   "/users/create",
   logRoute("ADMIN_USER_CREATE"),
   requireAdminAuth,
-  validateRequest({ body: CreateUserBodySchema }),
+  // Note: Body validation is handled in the controller after file upload
   createUserHandler
 );
 router.post(
@@ -40,7 +40,7 @@ router.post(
   requireAdminAuth,
   validateRequest({
     params: UpdateUserParamSchema,
-    body: UpdateUserBodySchema,
+    // Note: Body validation is handled in the controller after file upload
   }),
   updateUserHandler
 );

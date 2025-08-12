@@ -5,7 +5,8 @@ import {
   toggleUserStatus,
   softDeleteUser,
   createUser,
-} from "@/services/user.service";
+  upload,
+} from "@/services/UserModule.service";
 import {
   formatUserListForAdmin,
   formatUserForAdmin,
@@ -34,24 +35,46 @@ export const getAllUsersHandler = asyncHandler(
 
 export const createUserHandler = asyncHandler(
   async (req: Request, res: Response) => {
-    const body = CreateUserBodySchema.parse(req.body);
-    const user = await createUser(body);
-    return res.json(success("User created", formatUserForAdmin(user)));
+    // Handle file upload first
+    upload.single("profile_image")(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json(error(err.message));
+      }
+
+      try {
+        const body = CreateUserBodySchema.parse(req.body);
+        const user = await createUser(body, req.file);
+        return res.json(success("User created", formatUserForAdmin(user)));
+      } catch (error: any) {
+        return res.status(400).json(error(error.message));
+      }
+    });
   }
 );
 
 export const updateUserHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = UpdateUserParamSchema.parse(req.params);
-    const body = UpdateUserBodySchema.parse(req.body);
+    // Handle file upload first
+    upload.single("profile_image")(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json(error(err.message));
+      }
 
-    const updated = await updateUserById(Number(id), body);
+      try {
+        const { id } = UpdateUserParamSchema.parse(req.params);
+        const body = UpdateUserBodySchema.parse(req.body);
 
-    logUserUpdated(Number(id));
+        const updated = await updateUserById(Number(id), body, req.file);
 
-    return res.json(
-      success("User updated successfully", formatUserForAdmin(updated))
-    );
+        logUserUpdated(Number(id));
+
+        return res.json(
+          success("User updated successfully", formatUserForAdmin(updated))
+        );
+      } catch (error: any) {
+        return res.status(400).json(error(error.message));
+      }
+    });
   }
 );
 

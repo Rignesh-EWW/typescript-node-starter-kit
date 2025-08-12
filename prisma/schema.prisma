@@ -33,6 +33,7 @@ model User {
 enum DeviceType {
   android
   ios
+  web
 }
 
 enum Gender {
