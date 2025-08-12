@@ -31,9 +31,26 @@ export const findUserById = async (id: number): Promise<UserEntity | null> => {
   );
 };
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (
+  offset: number,
+  limit: number,
+  search?: string
+) => {
+  let whereClause: any = {};
+
+  if (typeof search === "string" && search.trim() !== "") {
+    whereClause.OR = [
+      { name: { contains: search } },
+      { email: { contains: search } },
+      { phone: { contains: search } },
+    ];
+  }
+
   return prisma.user.findMany({
+    where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
     orderBy: { created_at: "desc" },
+    skip: offset,
+    take: limit,
   });
 };
 

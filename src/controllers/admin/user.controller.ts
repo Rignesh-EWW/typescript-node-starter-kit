@@ -30,8 +30,25 @@ import { success, error } from "@/utils/responseWrapper";
 
 export const getAllUsersHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const users = await getAllUsers();
-    return res.json(success("Users fetched", formatUserListForAdmin(users)));
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = (page - 1) * limit;
+    const users = await getAllUsers(offset, limit, req.query.search as string);
+    const total_count = await getAllUsers(
+      0,
+      Number.MAX_SAFE_INTEGER,
+      req.query.search as string
+    ).then((u) => u.length);
+    const per_page = limit;
+    const current_page = page;
+    return res.json(
+      success("Users fetched", {
+        users: formatUserListForAdmin(users),
+        total_count,
+        per_page,
+        current_page,
+      })
+    );
   }
 );
 
