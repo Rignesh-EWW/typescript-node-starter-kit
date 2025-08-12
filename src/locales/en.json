@@ -70,6 +70,7 @@
     "contact": {
       "allFieldsRequired": "All fields are required",
       "emailSentSuccessfully": "Email sent successfully"
-    }
+    },
+    "chat": { "messageSent": "Message sent successfully" }
   }
 }

@@ -11,6 +11,7 @@ import cardRoutes from "@/routes/user/card";
 import addressRoutes from "@/routes/user/address";
 import walletRoutes from "@/routes/user/wallet";
 import contactUsRoutes from "@/routes/user/contractUs";
+import chatRoutes from "@/routes/user/chat";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/", cardRoutes);
 router.use("/", addressRoutes);
 router.use("/", walletRoutes);
 router.use("/", contactUsRoutes);
+router.use("/", chatRoutes);
 
 export default router;

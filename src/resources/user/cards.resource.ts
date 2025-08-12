@@ -1,16 +1,5 @@
 import { CardEntity } from "@/domain/entities/card.entity";
-// export const formatCardResponse = (card: CardEntity) => ({
-//   user_id: card.user_id,
-//   card_holder_name: card.card_holder_name,
-//   exp_date_month: card.exp_date_month,
-//   exp_date_year: card.exp_date_year,
-//   formated_card_no: card.formated_card_no,
-//   token: card.token,
-//   status: card.status,
-//   is_default: card.is_default,
-// });
 
-// import { CardEntity } from "@/domain/entities/card.entity";
 import { decrypt } from "@/utils/encryption";
 export const formatCardResponse = (card: CardEntity) => ({
   id: card.id,

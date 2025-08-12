@@ -29,6 +29,7 @@ import resetViewRoutes from "@/routes/reset.view";
 
 import type { Server } from "http";
 import path from "path";
+import { Server as SocketIOServer } from "socket.io";
 
 export const startServer = async (): Promise<Server> => {
   const app = express();
@@ -45,6 +46,30 @@ export const startServer = async (): Promise<Server> => {
   } else {
     logger.info("ℹ️ Redis disabled for local development");
   }
+
+  // ✅ Initialize Socket.IO
+  const io = new SocketIOServer(httpServer, {
+    cors: {
+      origin: "*", // Or your frontend URL
+      methods: ["GET", "POST"],
+    },
+  });
+  // Store io instance in app so controllers can use it
+  app.set("io", io);
+
+  // Socket.IO events
+  io.on("connection", (socket) => {
+    console.log("🟢 User connected:", socket.id);
+
+    socket.on("join_room", (req) => {
+      socket.join(req.type + "_" + req.id);
+      console.log(`📦 User ${socket.id} joined room ${req.type}_${req.id}`);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔴 User disconnected:", socket.id);
+    });
+  });
 
   // Middleware
   app.use((req, res, next) => {
@@ -90,7 +115,7 @@ export const startServer = async (): Promise<Server> => {
   // Error handler (should be last)
   app.use(globalErrorHandler);
 
-  const PORT = process.env.PORT || 3002;
+  const PORT = process.env.PORT || 3000;
   await new Promise<void>((resolve) => {
     httpServer.listen(PORT, () => {
       logger.info(`🚀 Server running on http://localhost:${PORT}`);

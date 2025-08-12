@@ -177,6 +177,27 @@ model ContactUs {
   
   @@map("contact_us")
 }
+model Message {
+  id            Int       @id @default(autoincrement())
+  sender_type   UserType
+  sender_id     Int
+  receiver_type UserType
+  receiver_id   Int
+  message       String
+  read_at       DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? 
+  deleted_at    DateTime?
+
+  @@map("messages")
+}
+
+enum UserType {
+  user
+  admin
+}
+
+
 
 
 
