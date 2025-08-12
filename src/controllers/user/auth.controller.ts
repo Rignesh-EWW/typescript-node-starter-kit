@@ -34,7 +34,7 @@ import {
   deleteToken,
   resetLinkInsert,
 } from "@/services/passwordResetToken.service";
-import { sendResetEmail } from "@utils/sendMail";
+import { sendEmail } from "@utils/sendMail";
 import { findUserByEmailResetToken } from "@/repositories/passwordResetToken.repository";
 import { generateThumbnail, saveBase64Image } from "@utils/fileUpload";
 import fs, { existsSync } from "fs";
@@ -346,8 +346,14 @@ const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     token,
     expires_at,
   });
-
-  await sendResetEmail(email, token);
+  const resetUrl = `https://yourapp.com/reset-password?token=${token}`;
+  const htmlTemplate = `
+    <h2>Password Reset</h2>
+    <p>Click the link below to reset your password. This link will expire in 15 minutes.</p>
+    <a href="${resetUrl}">${resetUrl}</a>
+  `;
+  const subject = "Reset your password";
+  await sendEmail(email, subject, htmlTemplate);
 
   return res.json(success(req.translator.t(AuthMessages.linkSent)));
 });

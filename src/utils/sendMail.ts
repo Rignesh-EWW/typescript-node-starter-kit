@@ -1,6 +1,10 @@
 import nodemailer from "nodemailer";
 
-export const sendResetEmail = async (email: string, token: string) => {
+export const sendEmail = async (
+  email: string,
+  subject: string,
+  htmlTemplate: string
+) => {
   console.log(process.env.SMTP_USER);
   console.log(process.env.SMTP_PASS);
   const transporter = nodemailer.createTransport({
@@ -11,18 +15,10 @@ export const sendResetEmail = async (email: string, token: string) => {
     },
   });
 
-  const resetUrl = `https://yourapp.com/reset-password?token=${token}`;
-
-  const htmlTemplate = `
-    <h2>Password Reset</h2>
-    <p>Click the link below to reset your password. This link will expire in 15 minutes.</p>
-    <a href="${resetUrl}">${resetUrl}</a>
-  `;
-
   await transporter.sendMail({
     from: `"Your App" <${process.env.SMTP_USER}>`,
     to: email,
-    subject: "Reset your password",
+    subject: subject,
     html: htmlTemplate,
   });
 };

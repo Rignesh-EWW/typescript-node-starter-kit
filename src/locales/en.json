@@ -66,6 +66,10 @@
     "wallet": {
       "transactionList": "Wallet Transaction list AR",
       "topupSuccess": "Topup successful"
+    },
+    "contact": {
+      "allFieldsRequired": "All fields are required",
+      "emailSentSuccessfully": "Email sent successfully"
     }
   }
 }

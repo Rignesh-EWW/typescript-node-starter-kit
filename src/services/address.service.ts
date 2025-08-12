@@ -1,4 +1,4 @@
-import { Address, AddressType, PrismaClient } from "@prisma/client";
+import { AddressType, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

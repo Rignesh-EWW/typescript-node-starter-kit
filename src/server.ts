@@ -90,7 +90,7 @@ export const startServer = async (): Promise<Server> => {
   // Error handler (should be last)
   app.use(globalErrorHandler);
 
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 3002;
   await new Promise<void>((resolve) => {
     httpServer.listen(PORT, () => {
       logger.info(`🚀 Server running on http://localhost:${PORT}`);

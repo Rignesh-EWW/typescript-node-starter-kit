@@ -164,6 +164,20 @@ enum PaymentStatus {
   pending
 }
 
+model ContactUs {
+  id         Int      @id @default(autoincrement())
+  full_name  String?  @db.VarChar(100)
+  email      String?   @db.Text
+  subject    String?  @db.Text
+  message    String?  @db.Text
+  status     Boolean   @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime?
+  delete_at  DateTime?
+  
+  @@map("contact_us")
+}
+
 
 
 

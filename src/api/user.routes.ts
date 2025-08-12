@@ -10,6 +10,7 @@ import appMenuLink from "@/routes/user/appLink";
 import cardRoutes from "@/routes/user/card";
 import addressRoutes from "@/routes/user/address";
 import walletRoutes from "@/routes/user/wallet";
+import contactUsRoutes from "@/routes/user/contractUs";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/", appMenuLink);
 router.use("/", cardRoutes);
 router.use("/", addressRoutes);
 router.use("/", walletRoutes);
+router.use("/", contactUsRoutes);
 
 export default router;

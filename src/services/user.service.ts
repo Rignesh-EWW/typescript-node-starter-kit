@@ -25,7 +25,6 @@ export const createUser = async (data: {
   device_token: string;
   profile_image: string;
 }) => {
-  const hashedPassword = await hashPassword(data.password);
   return prisma.user.create({
     data: {
       name: data.name,
@@ -33,7 +32,7 @@ export const createUser = async (data: {
       phone: data.phone || "",
       dob: data.dob ? new Date(data.dob) : null,
       gender: data.gender || "male",
-      password: hashedPassword,
+      password: data.password,
       device_type: data.device_type,
       device_token: data.device_token,
     },
