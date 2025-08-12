@@ -256,4 +256,27 @@ model Notification {
   user       User     @relation(fields: [user_id], references: [id])
 }
 
+model Media {
+  id                   BigInt    @id @default(autoincrement())
+  model_type           String
+  model_id             BigInt
+  uuid                 String?   @unique @db.Char(36)
+  collection_name      String
+  name                 String
+  file_name            String
+  mime_type            String?
+  disk                 String
+  conversions_disk     String?
+  size                 BigInt
+  manipulations        String     @db.LongText @default("{}")
+  custom_properties    String     @db.LongText @default("{}")
+  generated_conversions String    @db.LongText @default("{}")
+  responsive_images    String     @db.LongText @default("{}")
+  order_column         Int?
+  created_at           DateTime?  @default(now())
+  updated_at           DateTime?  @updatedAt
+
+  @@map("media")
+}
+
 

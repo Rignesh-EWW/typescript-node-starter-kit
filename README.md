@@ -159,6 +159,44 @@ GET /admin/export/users/xlsx
 
 ---
 
+## 📚 Media Library Examples
+
+Use the built–in media endpoints to attach files to any model.
+
+```http
+# Upload a single avatar for user 1
+POST /api/media/users/1/avatar  (file field: "file")
+
+# Upload multiple gallery images for post 5
+POST /api/media/posts/5/gallery/batch  (file field: "files")
+
+# Attach a document to order 9
+POST /api/media/orders/9/documents  (file field: "file")
+```
+
+Each response contains the persisted media id and a publicly accessible URL.
+
+### Collections & Conversions
+
+Configure collections and image conversions in `src/config/media-collections.ts`:
+
+```ts
+export const mediaCollections = {
+  avatar: {
+    singleFile: true,
+    conversions: [{ name: 'thumb', width: 200, height: 200 }],
+    acceptsMimeTypes: ['image/png', 'image/jpeg'],
+    fallbackUrl: '/images/default-avatar.png',
+  },
+  gallery: { maxFiles: 10 },
+};
+```
+
+Uploaded images for the `avatar` collection will store an extra `thumb` conversion.
+Use `mediaService.urlFor(media, 'thumb')` to retrieve the resized image.
+
+---
+
 ## 📦 Build & Start Production
 
 ```bash

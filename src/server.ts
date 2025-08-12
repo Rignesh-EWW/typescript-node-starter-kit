@@ -22,6 +22,7 @@ import { StatusCode } from "@/constants/statusCodes";
 // Routes
 import userRoutes from "@/api/user.routes";
 import adminRoutes from "@/api/admin.routes";
+import mediaRoutes from "@/api/media.routes";
 import healthRoutes from "@/api/health.routes";
 import docsRoutes from "@/api/docs.routes";
 import bullBoardRoutes from "@/api/bull.routes";
@@ -105,6 +106,9 @@ export const startServer = async (): Promise<Server> => {
 
   // Health check
   app.use("/api/health", healthRoutes);
+
+  // Media routes
+  app.use("/api/media", mediaRoutes);
 
   // User routes
   app.use("/api/user", userRoutes);
