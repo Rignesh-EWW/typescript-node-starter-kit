@@ -4,6 +4,8 @@ import path from 'path';
 import sharp from 'sharp';
 import type { Storage } from '@/adapters/storage/Storage';
 import type { MediaCollectionOptions, MediaConversion } from '@/config/media-collections';
+import { createStorage } from '@/config/storage.config';
+import { mediaCollections } from '@/config/media-collections';
 
 export interface UploadedFile {
   buffer: Buffer;
@@ -99,6 +101,39 @@ export class MediaService {
     return media;
   }
 
+  async insertRecord(opts: {
+    modelType: string;
+    modelId: number;
+    collection: string;
+    fileName: string;
+    mimeType?: string;
+    size: number;
+    name?: string;
+    disk?: string;
+    customProperties?: Record<string, unknown>;
+    uuid?: string;
+    generatedConversions?: Record<string, string>;
+  }): Promise<Media> {
+    const uuid = opts.uuid ?? uuidv4();
+    return this.prisma.media.create({
+      data: {
+        model_type: opts.modelType,
+        model_id: BigInt(opts.modelId),
+        uuid,
+        collection_name: opts.collection,
+        name: opts.name ?? opts.fileName,
+        file_name: opts.fileName,
+        mime_type: opts.mimeType,
+        disk: opts.disk ?? process.env.STORAGE_DRIVER ?? 'local',
+        size: BigInt(opts.size),
+        manipulations: '{}',
+        custom_properties: JSON.stringify(opts.customProperties ?? {}),
+        generated_conversions: JSON.stringify(opts.generatedConversions ?? {}),
+        responsive_images: '{}',
+      },
+    });
+  }
+
   listByModel(modelType: string, modelId: number) {
     return this.prisma.media.findMany({
       where: { model_type: modelType, model_id: BigInt(modelId) },
@@ -150,6 +185,12 @@ export class MediaService {
     if (!media) return;
     const key = `${media.model_type}/${media.model_id}/${media.collection_name}/${media.file_name}`;
     await this.storage.delete(key);
+    if (media.generated_conversions) {
+      const convs = JSON.parse(media.generated_conversions) as Record<string, string>;
+      for (const p of Object.values(convs)) {
+        await this.storage.delete(p);
+      }
+    }
     await this.prisma.media.delete({ where: { id: BigInt(id) } });
   }
 
@@ -171,4 +212,27 @@ export class MediaService {
   private conversionPath(opts: AttachFileOptions, uuid: string, conv: MediaConversion, ext: string): string {
     return `${opts.modelType}/${opts.modelId}/${opts.collection}/conversions/${uuid}-${conv.name}${ext}`;
   }
+}
+
+const prisma = new PrismaClient();
+export const mediaService = new MediaService(prisma, createStorage(), mediaCollections);
+
+export function mediaable(model: { id: number; __type: string }) {
+  const all = async (collection?: string) => {
+    const list = await mediaService.listByModel(model.__type, model.id);
+    return collection ? list.filter((m) => m.collection_name === collection) : list;
+  };
+  const first = async (collection?: string) => {
+    const list = await all(collection);
+    return list.length ? list[0] : null;
+  };
+  const firstUrl = async (collection?: string, conversion?: string) => {
+    const m = await first(collection);
+    return m ? mediaService.urlFor(m, conversion) : null;
+  };
+  const urls = async (collection?: string, conversion?: string) => {
+    const list = await all(collection);
+    return list.map((m) => mediaService.urlFor(m, conversion));
+  };
+  return { all, first, firstUrl, urls };
 }

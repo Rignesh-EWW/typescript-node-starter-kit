@@ -165,16 +165,21 @@ Use the built–in media endpoints to attach files to any model.
 
 ```http
 # Upload a single avatar for user 1
-POST /api/media/users/1/avatar  (file field: "file")
+POST /api/media/upload (file field: "file")
+Body: { "model_type": "users", "model_id": 1, "collection": "avatar" }
 
 # Upload multiple gallery images for post 5
-POST /api/media/posts/5/gallery/batch  (file field: "files")
+POST /api/media/upload-multiple (file field: "files")
+Body: { "model_type": "posts", "model_id": 5, "collection": "gallery" }
 
-# Attach a document to order 9
-POST /api/media/orders/9/documents  (file field: "file")
+# List media for a model/collection
+GET /api/media/by-model?model_type=users&model_id=1&collection=avatar
+
+# Delete a media item
+DELETE /api/media/:id
 ```
 
-Each response contains the persisted media id and a publicly accessible URL.
+Each response contains the persisted media id and a publicly accessible URL. Files are stored using the path pattern `<model_type>/<model_id>/<collection>/<uuid>.<ext>`.
 
 ### Collections & Conversions
 
@@ -194,6 +199,33 @@ export const mediaCollections = {
 
 Uploaded images for the `avatar` collection will store an extra `thumb` conversion.
 Use `mediaService.urlFor(media, 'thumb')` to retrieve the resized image.
+
+### Programmatic Usage
+
+Attach an uploaded file to the `avatar` collection for a user and retrieve a conversion URL:
+
+```ts
+await mediaService.attachFile({
+  modelType: 'users',
+  modelId: user.id,
+  collection: 'avatar',
+  file: { buffer: file.buffer, originalname: file.originalname, mimetype: file.mimetype, size: file.size }
+});
+const avatarUrl = await mediaable(user).firstUrl('avatar', 'thumb');
+```
+
+If the file is already uploaded to storage, insert a record directly:
+
+```ts
+await mediaService.insertRecord({
+  modelType: 'users',
+  modelId: user.id,
+  collection: 'avatar',
+  fileName: 'existing-file.png',
+  mimeType: 'image/png',
+  size: 1234
+});
+```
 
 ---
 

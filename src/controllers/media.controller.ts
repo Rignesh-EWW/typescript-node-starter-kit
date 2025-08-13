@@ -1,31 +1,25 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { createStorage } from '@/config/storage.config';
-import { mediaCollections } from '@/config/media-collections';
-import { MediaService, UploadedFile } from '@/services/media.service';
+import { mediaService, UploadedFile } from '@/services/media.service';
 import { asyncHandler } from '@/utils/asyncHandler';
 import { success } from '@/utils/responseWrapper';
 
-const prisma = new PrismaClient();
-const mediaService = new MediaService(prisma, createStorage(), mediaCollections);
-
 export const uploadSingle = asyncHandler(async (req: Request, res: Response) => {
-  const { modelType, modelId, collection } = req.params as any;
+  const { model_type, model_id, collection } = req.body as any;
   const file = (req as any).file as UploadedFile | undefined;
   if (!file) {
     return res.status(400).json({ error: 'file is required' });
   }
   const media = await mediaService.attachFile({
     file,
-    modelType,
-    modelId: Number(modelId),
+    modelType: model_type,
+    modelId: Number(model_id),
     collection,
   });
   res.json(success('uploaded', { id: Number(media.id), url: mediaService.urlFor(media) }));
 });
 
 export const uploadMultiple = asyncHandler(async (req: Request, res: Response) => {
-  const { modelType, modelId, collection } = req.params as any;
+  const { model_type, model_id, collection } = req.body as any;
   const files = (req as any).files as UploadedFile[];
   if (!files || files.length === 0) {
     return res.status(400).json({ error: 'files are required' });
@@ -34,8 +28,8 @@ export const uploadMultiple = asyncHandler(async (req: Request, res: Response) =
   for (const file of files) {
     const media = await mediaService.attachFile({
       file,
-      modelType,
-      modelId: Number(modelId),
+      modelType: model_type,
+      modelId: Number(model_id),
       collection,
     });
     results.push({ id: Number(media.id), url: mediaService.urlFor(media) });
@@ -44,9 +38,10 @@ export const uploadMultiple = asyncHandler(async (req: Request, res: Response) =
 });
 
 export const listByModel = asyncHandler(async (req: Request, res: Response) => {
-  const { modelType, modelId } = req.params as any;
-  const list = await mediaService.listByModel(modelType, Number(modelId));
-  const result = list.map((m) => ({ id: Number(m.id), url: mediaService.urlFor(m) }));
+  const { model_type, model_id, collection } = req.query as any;
+  const list = await mediaService.listByModel(model_type, Number(model_id));
+  const filtered = collection ? list.filter((m) => m.collection_name === collection) : list;
+  const result = filtered.map((m) => ({ id: Number(m.id), url: mediaService.urlFor(m) }));
   res.json(success('ok', result));
 });
 
@@ -54,11 +49,4 @@ export const deleteMedia = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params as any;
   await mediaService.delete(Number(id));
   res.json(success('deleted'));
-});
-
-export const updateCustomProps = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params as any;
-  const { custom } = req.body as any;
-  await mediaService.updateCustomProps(Number(id), custom ?? {});
-  res.json(success('updated'));
 });
