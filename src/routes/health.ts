@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { success } from "@/utils/responseWrapper";
 import { StatusCode } from "@/constants/statusCodes";
+const config = require("../../config");
 
 const router = Router();
 
@@ -11,7 +12,7 @@ router.get("/", (req, res) => {
       success("Server is running", {
         uptime: process.uptime(),
         timestamp: Date.now(),
-        version: process.env.npm_package_version,
+        version: config.app.version,
       })
     );
 });

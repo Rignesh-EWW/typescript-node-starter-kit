@@ -3,6 +3,7 @@ import { createClient } from "redis";
 import { error } from "@/utils/responseWrapper";
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../config");
 
 // In-memory rate limiting fallback
 const memoryStore = new Map<string, { count: number; resetTime: number }>();
@@ -10,7 +11,7 @@ const memoryStore = new Map<string, { count: number; resetTime: number }>();
 let redis: any = null;
 // Only use Redis in production
 if (isProduction) {
-  redis = createClient({ url: process.env.REDIS_URL });
+  redis = createClient({ url: config.db.redisUrl });
   redis.connect();
 } else {
   logger.info("ℹ️ Redis disabled for rate limiting in local development");

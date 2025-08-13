@@ -15,6 +15,7 @@ import { signJwt } from "@/utils/jwt";
 import { success, error } from "@/utils/responseWrapper";
 import { sendEmail } from "@/utils/mailer";
 import { invalidateAuthToken } from "@/utils/authToken";
+const config = require("../../../config");
 
 export const loginAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -72,8 +73,7 @@ export const forgotPassword = asyncHandler(
       type: "admin-reset",
     });
 
-    const baseUrl =
-      process.env.ADMIN_RESET_PASSWORD_URL || "http://localhost:3000";
+    const baseUrl = config.mail.adminResetPasswordUrl;
     const resetLink = `${baseUrl}?token=${resetToken}`;
 
     const emailHtml = `

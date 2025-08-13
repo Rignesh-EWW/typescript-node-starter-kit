@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { UserEntity } from "@/domain/entities/user.entity";
 import { mediaService } from "@/services/media.service";
+const config = require("../../config");
 
 const prisma = new PrismaClient();
 
@@ -26,7 +27,7 @@ export const findUserById = async (id: number): Promise<UserEntity | null> => {
   if (!user) return null;
 
   const profileImageUrl = user.media?.[0]
-    ? `${process.env.BASE_URL}${mediaService.urlFor(user.media[0])}`
+    ? `${config.app.baseUrl}${mediaService.urlFor(user.media[0])}`
     : null;
 
   const dobString = user.dob ? user.dob.toISOString() : null;

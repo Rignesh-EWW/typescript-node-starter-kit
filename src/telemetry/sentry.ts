@@ -1,11 +1,12 @@
 import * as Sentry from "@sentry/node";
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../config");
 
 export const initSentry = () => {
   if (!isProduction) return;
   Sentry.init({
-    dsn: process.env.SENTRY_DSN || "",
+    dsn: config.sentry.dsn,
     tracesSampleRate: 1.0,
   });
 };

@@ -1,7 +1,8 @@
 import crypto from "crypto";
+const config = require("../../config");
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY!; // 32 chars
-const IV = process.env.ENCRYPTION_KEY_IV!; // 16 chars
+const ENCRYPTION_KEY = config.encryption.key!; // 32 chars
+const IV = config.encryption.iv!; // 16 chars
 
 export const encrypt = (text: string): string => {
   const cipher = crypto.createCipheriv("aes-256-cbc", ENCRYPTION_KEY, IV);

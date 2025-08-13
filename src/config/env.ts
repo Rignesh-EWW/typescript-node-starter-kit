@@ -1,7 +1,8 @@
 import 'dotenv/config';
+const config = require("../../config");
 
 export const env = {
-  APP_ENV: process.env.NODE_ENV || 'development',
+  APP_ENV: config.app.nodeEnv,
 };
 
 export const isProduction = env.APP_ENV === 'production';

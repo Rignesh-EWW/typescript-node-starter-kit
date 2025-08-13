@@ -1,6 +1,7 @@
 import { mailTransport } from "@/config/mail.config";
 import fs from "fs";
 import path from "path";
+const config = require("../../config");
 
 export const loadTemplate = (
   templateName: string,
@@ -28,7 +29,7 @@ export const sendEmail = async ({
   html: string;
 }) => {
   return mailTransport.sendMail({
-    from: process.env.MAIL_FROM || "no-reply@smartinbox.ai",
+    from: config.mail.from,
     to,
     subject,
     html,

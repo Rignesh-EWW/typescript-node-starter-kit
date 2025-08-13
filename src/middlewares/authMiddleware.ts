@@ -3,6 +3,7 @@ import { Messages } from "@/constants/messages";
 import { verifyAuthToken } from "@/utils/authToken";
 import { verifyJwt } from "@/utils/jwt";
 import { error } from "@/utils/responseWrapper";
+const config = require("../../config");
 
 export const requireUserAuth = (
   req: Request,
@@ -40,7 +41,7 @@ export const requireAuth = (
     return res.status(401).json(error(req.translator.t(Messages.unauthorized)));
   }
 
-  const expectedToken = process.env.AUTH_SECRET_KEY;
+  const expectedToken = config.token.authSecretKey;
   if (!expectedToken || authHeader !== expectedToken) {
     return res.status(401).json(error(req.translator.t(Messages.unauthorized)));
   }

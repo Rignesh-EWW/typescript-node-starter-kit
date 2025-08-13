@@ -1,6 +1,7 @@
 import { createHmac } from "crypto";
+const config = require("../../config");
 
-const JWT_SECRET = process.env.JWT_SECRET || "secret";
+const JWT_SECRET = config.token.jwtSecret;
 
 const base64url = (input: string | Buffer): string => {
   return Buffer.from(input)

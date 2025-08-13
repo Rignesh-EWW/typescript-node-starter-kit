@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { Storage } from './Storage';
+const config = require("../../../config");
 
 export class LocalStorage implements Storage {
   constructor(private root: string) {}
@@ -17,9 +18,9 @@ export class LocalStorage implements Storage {
   }
 
   url(filePath: string): string {
-    const base = process.env.APP_URL || '';
+    const base = config.app.url || '';
     // assuming express serves this.root as '/uploads'
-    const prefix = process.env.LOCAL_STORAGE_URL_PREFIX || '/uploads';
+    const prefix = config.storage.local.urlPrefix || '/uploads';
     return `${base}${prefix}/${filePath}`.replace(/\+/g, '/');
   }
 }

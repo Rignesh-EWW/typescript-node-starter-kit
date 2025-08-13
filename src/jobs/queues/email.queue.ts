@@ -1,6 +1,7 @@
 import { Queue } from "bullmq";
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../../config");
 
 class MockQueue {
   async add() {
@@ -14,9 +15,9 @@ export const emailQueue =
   isProduction
     ? new Queue("email", {
         connection: {
-          host: process.env.REDIS_HOST || "localhost",
-          port: Number(process.env.REDIS_PORT) || 6379,
-          password: process.env.REDIS_PASSWORD || undefined,
+          host: config.db.host,
+          port: config.db.port,
+          password: config.db.password,
         },
       })
     : (new MockQueue() as any);
