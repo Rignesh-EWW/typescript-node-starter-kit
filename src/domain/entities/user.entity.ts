@@ -13,10 +13,10 @@ export class UserEntity {
     public readonly dob: string | null, // ISO string or null
     public readonly device_type: string, // "android" | "ios"
     public readonly device_token: string | null,
-    public readonly profile_image: string | null,
     public readonly language: string,
     public readonly notifications_enabled: boolean,
-    public readonly wallet_balance: Decimal | null
+    public readonly wallet_balance: Decimal | null,
+    public readonly profile_image: string | null
   ) {}
 
   get displayName(): string {
@@ -37,29 +37,8 @@ export class UserEntity {
     if (!this.profile_image || this.profile_image.trim() === "") {
       return null;
     }
-    const cleanPath = this.profile_image.startsWith("/")
-      ? this.profile_image.slice(1)
-      : this.profile_image;
-    const fullPath = path.join(process.cwd(), cleanPath);
-    if (fs.existsSync(fullPath)) {
-      return `${BASE_URL}${cleanPath}`;
-    }
-    return null;
-  }
-  get profileThumbnailImageUrl(): string | null {
-    if (!this.profile_image || this.profile_image.trim() === "") {
-      return null;
-    }
-    const imageDir = path.dirname(this.profile_image) + "/thumbnail/";
-    const imageName = path.basename(this.profile_image);
-    const thumbName = `thumb_${imageName}`;
-    const webPath = path.join(imageDir, thumbName).replace(/\\/g, "/");
-    const thumbPath = path.join(process.cwd(), webPath);
-    console.log(thumbPath);
-    if (fs.existsSync(thumbPath)) {
-      return `${BASE_URL}${webPath}`;
-    }
-    return null;
+
+    return this.profile_image;
   }
 
   get dobFormatted(): string | null {

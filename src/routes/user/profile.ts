@@ -4,7 +4,6 @@ import {
   updateLanguage,
   updateNotification,
   updateProfile,
-  uploadProfilePicture,
 } from "@/controllers/user/profile.controller";
 import { requireUserAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
@@ -14,23 +13,21 @@ import {
   UpdateNotificationRequestSchema,
   UpdateProfileRequestSchema,
 } from "@/requests/user/profile.request";
+import multer from "multer";
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/me", logRoute("USER_ME"), requireUserAuth, getProfile);
 router.post(
   "/update",
   logRoute("USER_UPDATE"),
   requireUserAuth,
+  upload.single("profile_image"),
   validateRequest({ body: UpdateProfileRequestSchema }),
   updateProfile
 );
-router.post(
-  "/uploadProfilePicture",
-  logRoute("USER_UPDATE"),
-  requireUserAuth,
-  uploadProfilePicture
-);
+
 router.post(
   "/update/language",
   logRoute("USER_UPDATE_LANGUAGE"),

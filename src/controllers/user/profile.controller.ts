@@ -44,7 +44,7 @@ export const getProfile = asyncHandler(
 export const updateProfile = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id!;
-    const { name, email, phone, gender, dob, profile_image } =
+    const { name, email, phone, gender, dob } =
       UpdateProfileRequestSchema.parse(req.body);
 
     // Step 1: Verify user exists
@@ -71,27 +71,24 @@ export const updateProfile = asyncHandler(
         .json(error(req.translator.t(ProfileMessages.phoneAlreadyInUse)));
     }
 
-    // Step 4: Handle base64 image upload
-    let uploadedFile = user.profile_image ?? null;
+    // Step 4: Handle  image upload
 
-    if (profile_image) {
-      try {
-        // Delete old file if it exists
-        if (user.profile_image) {
-          const existingPath = path.join(process.cwd(), user.profile_image);
-          if (fs.existsSync(existingPath)) {
-            fs.unlinkSync(existingPath);
-          }
-        }
-        // Save new image
-        uploadedFile = await saveBase64Image(profile_image, "profile_images");
-      } catch (err) {
-        return res
-          .status(400)
-          .json(error(req.translator.t(ProfileMessages.invalidFileFormat)));
+    const file = (req as any).file as UploadedFile | undefined;
+    if (file) {
+      // A. Find the old profile image media record
+      const oldMedia = await mediaService.listByModel("user", Number(userId));
+      // B. Delete old media if exists
+      if (oldMedia) {
+        await mediaService.delete(oldMedia[0].id); // This should delete from DB + storage
       }
+      // C. Attach the new file
+      await mediaService.attachFile({
+        file,
+        modelType: "user",
+        modelId: Number(userId),
+        collection: "profile_image",
+      });
     }
-
     // Step 5: Format DOB
     const dobFormatted = dob ? new Date(dob).toISOString() : undefined;
 
@@ -102,7 +99,6 @@ export const updateProfile = asyncHandler(
       phone,
       gender,
       dob: dobFormatted,
-      profile_image: uploadedFile ?? undefined,
     });
 
     logUserUpdate(userId, email);
@@ -192,36 +188,6 @@ export const updateNotification = asyncHandler(
         req.translator.t(ProfileMessages.NotificationsUpdatedSuccess),
         formatUserResponse(updatedUser)
       )
-    );
-  }
-);
-
-export const uploadProfilePicture = asyncHandler(
-  async (req: Request, res: Response) => {
-    const file = (req as any).file as UploadedFile | undefined;
-    console.log(file);
-    if (!file) {
-      return res.status(400).json(error("Profile picture file is required"));
-    }
-
-    const userId = req.user?.id!;
-
-    const media = await mediaService.attachFile({
-      file,
-      modelType: "user",
-      modelId: userId, // from auth middleware
-      collection: "profile",
-    });
-
-    await updateUserById(userId, {
-      profile_image: mediaService.urlFor(media),
-    });
-
-    res.json(
-      success("Profile picture uploaded", {
-        id: Number(media.id),
-        url: mediaService.urlFor(media),
-      })
     );
   }
 );

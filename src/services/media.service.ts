@@ -1,11 +1,14 @@
-import { PrismaClient, Media } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import sharp from 'sharp';
-import type { Storage } from '@/adapters/storage/Storage';
-import type { MediaCollectionOptions, MediaConversion } from '@/config/media-collections';
-import { createStorage } from '@/config/storage.config';
-import { mediaCollections } from '@/config/media-collections';
+import { PrismaClient, Media } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import sharp from "sharp";
+import type { Storage } from "@/adapters/storage/Storage";
+import type {
+  MediaCollectionOptions,
+  MediaConversion,
+} from "@/config/media-collections";
+import { createStorage } from "@/config/storage.config";
+import { mediaCollections } from "@/config/media-collections";
 
 export interface UploadedFile {
   buffer: Buffer;
@@ -33,20 +36,30 @@ export class MediaService {
   async attachFile(opts: AttachFileOptions): Promise<Media> {
     const collectionCfg = this.collections[opts.collection];
 
-    if (collectionCfg?.acceptsMimeTypes && !collectionCfg.acceptsMimeTypes.includes(opts.file.mimetype)) {
-      throw new Error('Invalid mime type');
+    if (
+      collectionCfg?.acceptsMimeTypes &&
+      !collectionCfg.acceptsMimeTypes.includes(opts.file.mimetype)
+    ) {
+      throw new Error("Invalid mime type");
     }
 
     if (collectionCfg?.acceptsExtensions) {
-      const extCheck = path.extname(opts.file.originalname).replace('.', '').toLowerCase();
+      const extCheck = path
+        .extname(opts.file.originalname)
+        .replace(".", "")
+        .toLowerCase();
       if (!collectionCfg.acceptsExtensions.includes(extCheck)) {
-        throw new Error('Invalid file extension');
+        throw new Error("Invalid file extension");
       }
     }
 
     if (collectionCfg?.singleFile) {
       const existing = await this.prisma.media.findFirst({
-        where: { model_type: opts.modelType, model_id: BigInt(opts.modelId), collection_name: opts.collection },
+        where: {
+          model_type: opts.modelType,
+          model_id: Number(opts.modelId),
+          collection_name: opts.collection,
+        },
       });
       if (existing) {
         await this.delete(existing.id);
@@ -55,10 +68,14 @@ export class MediaService {
 
     if (collectionCfg?.maxFiles) {
       const count = await this.prisma.media.count({
-        where: { model_type: opts.modelType, model_id: BigInt(opts.modelId), collection_name: opts.collection },
+        where: {
+          model_type: opts.modelType,
+          model_id: Number(opts.modelId),
+          collection_name: opts.collection,
+        },
       });
       if (count >= collectionCfg.maxFiles) {
-        throw new Error('Collection maxFiles reached');
+        throw new Error("Collection maxFiles reached");
       }
     }
 
@@ -83,18 +100,18 @@ export class MediaService {
     const media = await this.prisma.media.create({
       data: {
         model_type: opts.modelType,
-        model_id: BigInt(opts.modelId),
+        model_id: Number(opts.modelId),
         uuid,
         collection_name: opts.collection,
         name: opts.name ?? opts.file.originalname,
         file_name: fileName,
         mime_type: opts.file.mimetype,
-        disk: process.env.STORAGE_DRIVER || 'local',
+        disk: process.env.STORAGE_DRIVER || "local",
         size: BigInt(opts.file.size),
-        manipulations: '{}',
+        manipulations: "{}",
         custom_properties: JSON.stringify(opts.customProperties ?? {}),
         generated_conversions: JSON.stringify(conversions),
-        responsive_images: '{}',
+        responsive_images: "{}",
       },
     });
 
@@ -118,26 +135,26 @@ export class MediaService {
     return this.prisma.media.create({
       data: {
         model_type: opts.modelType,
-        model_id: BigInt(opts.modelId),
+        model_id: Number(opts.modelId),
         uuid,
         collection_name: opts.collection,
         name: opts.name ?? opts.fileName,
         file_name: opts.fileName,
         mime_type: opts.mimeType,
-        disk: opts.disk ?? process.env.STORAGE_DRIVER ?? 'local',
+        disk: opts.disk ?? process.env.STORAGE_DRIVER ?? "local",
         size: BigInt(opts.size),
-        manipulations: '{}',
+        manipulations: "{}",
         custom_properties: JSON.stringify(opts.customProperties ?? {}),
         generated_conversions: JSON.stringify(opts.generatedConversions ?? {}),
-        responsive_images: '{}',
+        responsive_images: "{}",
       },
     });
   }
 
   listByModel(modelType: string, modelId: number) {
     return this.prisma.media.findMany({
-      where: { model_type: modelType, model_id: BigInt(modelId) },
-      orderBy: { order_column: 'asc' },
+      where: { model_type: modelType, model_id: Number(modelId) },
+      orderBy: { order_column: "asc" },
     });
   }
 
@@ -145,7 +162,7 @@ export class MediaService {
     media: {
       file_name: string;
       model_type: string;
-      model_id: bigint;
+      model_id: number;
       collection_name: string;
       generated_conversions?: string;
     },
@@ -171,22 +188,31 @@ export class MediaService {
     conversion?: string
   ): Promise<string> {
     const media = await this.prisma.media.findFirst({
-      where: { model_type: modelType, model_id: BigInt(modelId), collection_name: collection },
+      where: {
+        model_type: modelType,
+        model_id: Number(modelId),
+        collection_name: collection,
+      },
     });
     if (!media) {
       const cfg = this.collections[collection];
-      return cfg?.fallbackUrl ?? '';
+      return cfg?.fallbackUrl ?? "";
     }
     return this.urlFor(media, conversion);
   }
 
   async delete(id: number | bigint): Promise<void> {
-    const media = await this.prisma.media.findUnique({ where: { id: BigInt(id) } });
+    const media = await this.prisma.media.findUnique({
+      where: { id: BigInt(id) },
+    });
     if (!media) return;
     const key = `${media.model_type}/${media.model_id}/${media.collection_name}/${media.file_name}`;
     await this.storage.delete(key);
     if (media.generated_conversions) {
-      const convs = JSON.parse(media.generated_conversions) as Record<string, string>;
+      const convs = JSON.parse(media.generated_conversions) as Record<
+        string,
+        string
+      >;
       for (const p of Object.values(convs)) {
         await this.storage.delete(p);
       }
@@ -194,14 +220,20 @@ export class MediaService {
     await this.prisma.media.delete({ where: { id: BigInt(id) } });
   }
 
-  async updateCustomProps(id: number | bigint, props: Record<string, unknown>): Promise<void> {
+  async updateCustomProps(
+    id: number | bigint,
+    props: Record<string, unknown>
+  ): Promise<void> {
     await this.prisma.media.update({
       where: { id: BigInt(id) },
       data: { custom_properties: JSON.stringify(props) },
     });
   }
 
-  private async generateConversion(buffer: Buffer, conv: MediaConversion): Promise<Buffer> {
+  private async generateConversion(
+    buffer: Buffer,
+    conv: MediaConversion
+  ): Promise<Buffer> {
     let img = sharp(buffer);
     if (conv.width || conv.height) {
       img = img.resize(conv.width, conv.height);
@@ -209,18 +241,29 @@ export class MediaService {
     return img.toBuffer();
   }
 
-  private conversionPath(opts: AttachFileOptions, uuid: string, conv: MediaConversion, ext: string): string {
+  private conversionPath(
+    opts: AttachFileOptions,
+    uuid: string,
+    conv: MediaConversion,
+    ext: string
+  ): string {
     return `${opts.modelType}/${opts.modelId}/${opts.collection}/conversions/${uuid}-${conv.name}${ext}`;
   }
 }
 
 const prisma = new PrismaClient();
-export const mediaService = new MediaService(prisma, createStorage(), mediaCollections);
+export const mediaService = new MediaService(
+  prisma,
+  createStorage(),
+  mediaCollections
+);
 
 export function mediaable(model: { id: number; __type: string }) {
   const all = async (collection?: string) => {
     const list = await mediaService.listByModel(model.__type, model.id);
-    return collection ? list.filter((m) => m.collection_name === collection) : list;
+    return collection
+      ? list.filter((m) => m.collection_name === collection)
+      : list;
   };
   const first = async (collection?: string) => {
     const list = await all(collection);

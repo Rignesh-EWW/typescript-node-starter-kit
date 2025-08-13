@@ -52,7 +52,6 @@ export const updateUserById = async (
     device_type?: DeviceType;
     language?: Language;
     device_token?: string;
-    profile_image?: string;
     notifications_enabled?: boolean;
   }
 ) => {
@@ -64,7 +63,6 @@ export const updateUserById = async (
       phone: data.phone,
       dob: data.dob,
       gender: data.gender,
-      profile_image: data.profile_image,
     },
   });
 };

@@ -7,7 +7,6 @@ export const UpdateProfileRequestSchema = z.object({
   phone: z.string().min(9),
   dob: z.coerce.date(),
   gender: z.nativeEnum(Gender),
-  profile_image: z.string().min(6),
 });
 
 export const UpdateLanguageRequestSchema = z.object({

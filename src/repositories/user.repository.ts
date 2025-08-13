@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { UserEntity } from "@/domain/entities/user.entity";
+import { mediaService } from "@/services/media.service";
 
 const prisma = new PrismaClient();
 
@@ -12,8 +13,22 @@ export const findUserByPhone = async (phone: string) => {
 };
 
 export const findUserById = async (id: number): Promise<UserEntity | null> => {
-  const user = await prisma.user.findUnique({ where: { id } });
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      media: {
+        where: { collection_name: "profile_image" },
+        orderBy: { id: "desc" },
+        take: 1,
+      },
+    },
+  });
   if (!user) return null;
+
+  const profileImageUrl = user.media?.[0]
+    ? `${process.env.BASE_URL}${mediaService.urlFor(user.media[0])}`
+    : null;
+
   const dobString = user.dob ? user.dob.toISOString() : null;
   return new UserEntity(
     user.id,
@@ -24,10 +39,10 @@ export const findUserById = async (id: number): Promise<UserEntity | null> => {
     dobString,
     user.device_type,
     user.device_token,
-    user.profile_image,
     user.language,
     user.notifications_enabled,
-    user.wallet_balance
+    user.wallet_balance,
+    profileImageUrl
   );
 };
 
@@ -50,7 +65,6 @@ export const getAllUsersForExport = async () => {
       dob: true,
       status: true,
       created_at: true,
-      profile_image: true,
       wallet_balance: true,
       updated_at: true,
       deleted_at: true,

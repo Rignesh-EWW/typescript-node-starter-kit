@@ -10,7 +10,6 @@ export const formatUserResponse = (user: UserEntity) => ({
   device_type: user.device_type,
   device_token: user.deviceTokenSafe,
   profile_image: user.profileImageUrl,
-  profile_thumbnail: user.profileThumbnailImageUrl,
   language: user.language,
   notifications_enabled: user.notifications_enabled,
   wallet_balance: user.wallet_balance,
