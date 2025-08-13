@@ -14,6 +14,7 @@ import { issueAuthToken } from "@/utils/authToken";
 import { signJwt } from "@/utils/jwt";
 import { success, error } from "@/utils/responseWrapper";
 import { sendEmail } from "@/utils/mailer";
+import { invalidateAuthToken } from "@/utils/authToken";
 
 export const loginAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -51,6 +52,10 @@ export const loginAdmin = asyncHandler(
 export const logout = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const adminId = req.user?.id!;
+
+    // Invalidate the auth token to ensure it can't be used again
+    invalidateAuthToken(adminId);
+
     res.send(success("Logged out successfully"));
   }
 );
