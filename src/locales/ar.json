@@ -71,6 +71,7 @@
       "allFieldsRequired": "सभी फ़ील्ड की आवश्यकता है",
       "emailSentSuccessfully": "ईमेल भेजने में सफलतापूर्वक आयोजित"
     },
-    "chat": { "messageSent": "आपका संदेश सफलतापूर्वक भेजा गया" }
+    "chat": { "messageSent": "आपका संदेश सफलतापूर्वक भेजा गया" },
+    "tracking": { "locationSent": "आपका स्थान सफलतापूर्वक भेजा गया" }
   }
 }

@@ -12,6 +12,7 @@ import addressRoutes from "@/routes/user/address";
 import walletRoutes from "@/routes/user/wallet";
 import contactUsRoutes from "@/routes/user/contractUs";
 import chatRoutes from "@/routes/user/chat";
+import trackRoutes from "@/routes/user/tracking";
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use("/", addressRoutes);
 router.use("/", walletRoutes);
 router.use("/", contactUsRoutes);
 router.use("/", chatRoutes);
+router.use("/", trackRoutes);
 
 export default router;

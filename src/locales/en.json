@@ -71,6 +71,7 @@
       "allFieldsRequired": "All fields are required",
       "emailSentSuccessfully": "Email sent successfully"
     },
-    "chat": { "messageSent": "Message sent successfully" }
+    "chat": { "messageSent": "Message sent successfully" },
+    "tracking": { "locationSent": "Location sent successfully" }
   }
 }
