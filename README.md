@@ -61,6 +61,52 @@ npm run dev
 
 ---
 
+## 🛡️ Role & Permission Middleware
+
+Built-in middlewares make it easy to guard routes using roles and permissions.
+
+```ts
+import {
+  requireRole,
+  requireAllRoles,
+  requirePermission,
+  requireAllPermissions,
+  roleOrPermission,
+} from "@/middlewares/rbacMiddleware";
+
+// User must have any of the roles
+app.get("/admin", requireRole("admin|moderator"), handler);
+
+// User must have all listed roles
+app.post(
+  "/manage",
+  requireAllRoles(["editor", "approver"]),
+  handler,
+);
+
+// User must have any of the permissions
+app.delete(
+  "/posts",
+  requirePermission("delete posts|force delete posts"),
+  handler,
+);
+
+// User must have all listed permissions
+app.put(
+  "/posts",
+  requireAllPermissions(["edit posts", "publish posts"]),
+  handler,
+);
+
+// User must have either the role or the permission
+app.get("/reports", roleOrPermission("admin|view reports"), handler);
+```
+
+These helpers mirror the expressive style of Laravel's Spatie package while
+keeping the API lightweight.
+
+---
+
 ## ✅ Modules Implemented
 
 ### 👤 Users
