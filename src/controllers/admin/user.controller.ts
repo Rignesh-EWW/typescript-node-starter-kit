@@ -72,8 +72,8 @@ export const createUserHandler = asyncHandler(
         const body = CreateUserBodySchema.parse(req.body);
         const user = await createUser(body, req.file);
         return res.json(success("User created", formatUserForAdmin(user)));
-      } catch (error: any) {
-        return res.status(400).json(error(error.message));
+      } catch (err: any) {
+        return res.status(400).json(error((err as Error).message));
       }
     });
   }
@@ -98,8 +98,8 @@ export const updateUserHandler = asyncHandler(
         return res.json(
           success("User updated successfully", formatUserForAdmin(updated))
         );
-      } catch (error: any) {
-        return res.status(400).json(error(error.message));
+      } catch (err: any) {
+        return res.status(400).json(error((err as Error).message));
       }
     });
   }

@@ -8,6 +8,7 @@ import appVariableRoutes from "@/routes/admin/appVariable";
 import userRoutes from "@/routes/admin/user";
 import importExportRoutes from "@/routes/admin/importExport";
 import adminUserRoutes from "@/routes/admin/adminUser";
+import faqRoutes from "@/routes/admin/faq";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/", appVariableRoutes);
 router.use("/admin-user", adminUserRoutes);
 router.use("/user", userRoutes);
 router.use("/user", importExportRoutes);
+router.use("/faq", faqRoutes);
 
 export default router;
