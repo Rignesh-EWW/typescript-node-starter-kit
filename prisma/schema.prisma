@@ -33,6 +33,7 @@ model User {
 enum DeviceType {
   android
   ios
+  web
 }
 
 enum Gender {
@@ -64,8 +65,8 @@ model PasswordResetToken {
 }
 model Faq {
   id          Int      @id @default(autoincrement())
-  question    String   @db.Text     // Long-form question
-  answer      String   @db.Text     // Long-form answer
+  question    Json     // Long-form question
+  answer      Json     // Long-form answer
   status      Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime? @updatedAt

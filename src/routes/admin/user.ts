@@ -5,6 +5,7 @@ import {
   toggleUserStatusHandler,
   deleteUserHandler,
   createUserHandler,
+  getUserByIdHandler,
 } from "@/controllers/admin/user.controller";
 import { requireAdminAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
@@ -12,6 +13,7 @@ import {
   UpdateUserParamSchema,
   UpdateUserBodySchema,
   CreateUserBodySchema,
+  GetUserParamSchema,
 } from "@/requests/admin/user.request";
 import validateRequest from "@/middlewares/validateRequest";
 import {
@@ -27,11 +29,20 @@ router.get(
   requireAdminAuth,
   getAllUsersHandler
 );
+
+router.get(
+  "/users/:id",
+  logRoute("ADMIN_USER_SINGLE"),
+  requireAdminAuth,
+  validateRequest({ params: GetUserParamSchema }),
+  getUserByIdHandler
+);
+
 router.post(
   "/users/create",
   logRoute("ADMIN_USER_CREATE"),
   requireAdminAuth,
-  validateRequest({ body: CreateUserBodySchema }),
+  // Note: Body validation is handled in the controller after file upload
   createUserHandler
 );
 router.post(
@@ -40,7 +51,7 @@ router.post(
   requireAdminAuth,
   validateRequest({
     params: UpdateUserParamSchema,
-    body: UpdateUserBodySchema,
+    // Note: Body validation is handled in the controller after file upload
   }),
   updateUserHandler
 );

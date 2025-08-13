@@ -5,7 +5,9 @@ import {
   toggleUserStatus,
   softDeleteUser,
   createUser,
-} from "@/services/user.service";
+  upload,
+  getUserById,
+} from "@/services/UserModule.service";
 import {
   formatUserListForAdmin,
   formatUserForAdmin,
@@ -17,6 +19,7 @@ import {
   DeleteUserParamSchema,
   ToggleUserParamSchema,
   CreateUserBodySchema,
+  GetUserParamSchema,
 } from "@/requests/admin/user.request";
 import {
   logUserUpdated,
@@ -27,31 +30,78 @@ import { success, error } from "@/utils/responseWrapper";
 
 export const getAllUsersHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const users = await getAllUsers();
-    return res.json(success("Users fetched", formatUserListForAdmin(users)));
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = (page - 1) * limit;
+    const users = await getAllUsers(offset, limit, req.query.search as string);
+    const total_count = await getAllUsers(
+      0,
+      Number.MAX_SAFE_INTEGER,
+      req.query.search as string
+    ).then((u) => u.length);
+    const per_page = limit;
+    const current_page = page;
+    return res.json(
+      success("Users fetched", {
+        users: formatUserListForAdmin(users),
+        total_count,
+        per_page,
+        current_page,
+      })
+    );
+  }
+);
+
+export const getUserByIdHandler = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = GetUserParamSchema.parse(req.params);
+    const user = await getUserById(Number(id));
+    return res.json(success("User fetched", formatUserForAdmin(user)));
   }
 );
 
 export const createUserHandler = asyncHandler(
   async (req: Request, res: Response) => {
-    const body = CreateUserBodySchema.parse(req.body);
-    const user = await createUser(body);
-    return res.json(success("User created", formatUserForAdmin(user)));
+    // Handle file upload first
+    upload.single("profile_image")(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json(error(err.message));
+      }
+
+      try {
+        const body = CreateUserBodySchema.parse(req.body);
+        const user = await createUser(body, req.file);
+        return res.json(success("User created", formatUserForAdmin(user)));
+      } catch (err: any) {
+        return res.status(400).json(error((err as Error).message));
+      }
+    });
   }
 );
 
 export const updateUserHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = UpdateUserParamSchema.parse(req.params);
-    const body = UpdateUserBodySchema.parse(req.body);
+    // Handle file upload first
+    upload.single("profile_image")(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json(error(err.message));
+      }
 
-    const updated = await updateUserById(Number(id), body);
+      try {
+        const { id } = UpdateUserParamSchema.parse(req.params);
+        const body = UpdateUserBodySchema.parse(req.body);
 
-    logUserUpdated(Number(id));
+        const updated = await updateUserById(Number(id), body, req.file);
 
-    return res.json(
-      success("User updated successfully", formatUserForAdmin(updated))
-    );
+        logUserUpdated(Number(id));
+
+        return res.json(
+          success("User updated successfully", formatUserForAdmin(updated))
+        );
+      } catch (err: any) {
+        return res.status(400).json(error((err as Error).message));
+      }
+    });
   }
 );
 
