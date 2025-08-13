@@ -7,27 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id              Int             @id @default(autoincrement())
-  name            String
-  email           String          @unique
-  phone           String          @unique
-  password        String
-  status          Boolean         @default(true)
-  device_type     DeviceType      @default(android)
-  device_token    String?
-  dob             DateTime?       // ✅ Date of birth (optional)
-  gender          Gender?         @default(male)
-  language        Language        @default(en)    // ✅ Language enum
-  notifications_enabled Boolean   @default(true)  // ✅ Notifications on/off
-  wallet_balance  Decimal         @default(0.00) @db.Decimal(10, 2) // ✅ Wallet balance
-  created_at      DateTime        @default(now())
-  updated_at      DateTime        @updatedAt
-  deleted_at      DateTime?
+  id                    Int        @id @default(autoincrement())
+  name                  String
+  email                 String     @unique
+  phone                 String     @unique
+  password              String
+  status                Boolean    @default(true)
+  device_type           DeviceType @default(android)
+  device_token          String?
+  dob                   DateTime? // ✅ Date of birth (optional)
+  gender                Gender?    @default(male)
+  language              Language   @default(en) // ✅ Language enum
+  notifications_enabled Boolean    @default(true) // ✅ Notifications on/off
+  wallet_balance        Decimal    @default(0.00) @db.Decimal(10, 2) // ✅ Wallet balance
+  created_at            DateTime   @default(now())
+  updated_at            DateTime   @updatedAt
+  deleted_at            DateTime?
 
-  notifications   Notification[]
-  media  Media[] 
+  notifications Notification[]
+  media         Media[]
 }
 
 enum DeviceType {
@@ -47,37 +46,36 @@ enum Language {
   en
 }
 
-
-
 model OTPVerification {
-  id        Int      @id @default(autoincrement())
-  phone     String
-  otp       String
+  id         Int      @id @default(autoincrement())
+  phone      String
+  otp        String
   created_at DateTime @default(now())
 }
 
 model PasswordResetToken {
-  id        Int      @id @default(autoincrement())
-  email     String
-  token     String   @unique
+  id         Int      @id @default(autoincrement())
+  email      String
+  token      String   @unique
   expires_at DateTime
   created_at DateTime @default(now())
 }
-model Faq {
-  id          Int      @id @default(autoincrement())
-  question    Json     // Long-form question
-  answer      Json     // Long-form answer
-  status      Boolean  @default(true)
-  created_at  DateTime @default(now())
-  updated_at  DateTime? @updatedAt
-  deleted_at  DateTime?
 
-   @@map("faq") // Custom table name
+model Faq {
+  id         Int       @id @default(autoincrement())
+  question   Json // Long-form question
+  answer     Json // Long-form answer
+  status     Boolean   @default(true)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
+  @@map("faq") // Custom table name
 }
 
 model Card {
   id                 Int       @id @default(autoincrement())
-  user_id            Int?      
+  user_id            Int?
   card_holder_name   String?   @db.Text
   exp_date_month     String?   @db.Text
   exp_date_year      String?   @db.Text
@@ -85,29 +83,29 @@ model Card {
   payment_id         String?   @db.Text
   token              String?   @db.Text
   verification_token String?   @db.Text
-  status            Boolean  @default(true)
-  is_default        Boolean  @default(false)
+  status             Boolean   @default(true)
+  is_default         Boolean   @default(false)
   card_type          String?   @db.VarChar(30)
   created_at         DateTime  @default(now())
-  updated_at         DateTime? 
-  deleted_at         DateTime? 
+  updated_at         DateTime?
+  deleted_at         DateTime?
 
   @@map("cards") // maps to the actual table name if it is "cards"
 }
 
 model Address {
-  id            Int       @id @default(autoincrement())
-  user_id       Int?
-  address_type  AddressType @default(home)
-  full_address  String?   @db.Text
-  lat           String?   @db.VarChar(20)
-  lng           String?   @db.VarChar(20)
-  house_number  String?   @db.VarChar(100)
-  is_default    Boolean   @default(false)
-  status        Boolean   @default(true)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime? @updatedAt
-  deleted_at    DateTime?
+  id           Int         @id @default(autoincrement())
+  user_id      Int?
+  address_type AddressType @default(home)
+  full_address String?     @db.Text
+  lat          String?     @db.VarChar(20)
+  lng          String?     @db.VarChar(20)
+  house_number String?     @db.VarChar(100)
+  is_default   Boolean     @default(false)
+  status       Boolean     @default(true)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime?   @updatedAt
+  deleted_at   DateTime?
 
   @@map("address") // optional: use if actual table name is "address"
 }
@@ -119,15 +117,15 @@ enum AddressType {
 }
 
 model WalletTransaction {
-  id             Int       @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   user_id        Int?
   operation_type OperationType @default(A)
-  amount         Decimal   @default(0.00) @db.Decimal(10, 2)
-  description    String?   @db.Text
-  description_ar String?   @db.Text
-  created_at     DateTime  @default(now()) @db.DateTime(0)
-  updated_at     DateTime? @db.DateTime(0)
-  deleted_at     DateTime? @db.DateTime(0)
+  amount         Decimal       @default(0.00) @db.Decimal(10, 2)
+  description    String?       @db.Text
+  description_ar String?       @db.Text
+  created_at     DateTime      @default(now()) @db.DateTime(0)
+  updated_at     DateTime?     @db.DateTime(0)
+  deleted_at     DateTime?     @db.DateTime(0)
 
   @@map("wallet_transactions") // table name
 }
@@ -136,19 +134,20 @@ enum OperationType {
   S
   A
 }
+
 model PaymentDetail {
-  id                Int       @id @default(autoincrement())
-  order_id          Int?
-  payment_id        String?   @db.Text
-  payment_type      PaymentType  @default(card)
-  payment_status    PaymentStatus @default(pending)
-  payment_response  String?   @db.Text
-  amount            Decimal   @default(0.00) @db.Decimal(10, 2)
-  payment_message   String?   @db.Text
-  transaction_type  String?   @db.VarChar(200)
-  created_at        DateTime  @default(now())
-  updated_at        DateTime? @updatedAt
-  deleted_at        DateTime?
+  id               Int           @id @default(autoincrement())
+  order_id         Int?
+  payment_id       String?       @db.Text
+  payment_type     PaymentType   @default(card)
+  payment_status   PaymentStatus @default(pending)
+  payment_response String?       @db.Text
+  amount           Decimal       @default(0.00) @db.Decimal(10, 2)
+  payment_message  String?       @db.Text
+  transaction_type String?       @db.VarChar(200)
+  created_at       DateTime      @default(now())
+  updated_at       DateTime?     @updatedAt
+  deleted_at       DateTime?
 
   @@map("payment_details") // table name
 }
@@ -166,18 +165,19 @@ enum PaymentStatus {
 }
 
 model ContactUs {
-  id         Int      @id @default(autoincrement())
-  full_name  String?  @db.VarChar(100)
+  id         Int       @id @default(autoincrement())
+  full_name  String?   @db.VarChar(100)
   email      String?   @db.Text
-  subject    String?  @db.Text
-  message    String?  @db.Text
+  subject    String?   @db.Text
+  message    String?   @db.Text
   status     Boolean   @default(true)
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
   updated_at DateTime?
   delete_at  DateTime?
-  
+
   @@map("contact_us")
 }
+
 model Message {
   id            Int       @id @default(autoincrement())
   sender_type   UserType
@@ -187,7 +187,7 @@ model Message {
   message       String
   read_at       DateTime?
   created_at    DateTime  @default(now())
-  updated_at    DateTime? 
+  updated_at    DateTime?
   deleted_at    DateTime?
 
   @@map("messages")
@@ -197,11 +197,6 @@ enum UserType {
   user
   admin
 }
-
-
-
-
-
 
 model Admin {
   id         Int       @id @default(autoincrement())
@@ -214,35 +209,35 @@ model Admin {
 }
 
 model AppSetting {
-  id              Int      @id @default(autoincrement())
-  app_label       String
-  app_type        String   // "android" | "ios"
-  app_version     Int
-  force_updates   Boolean  @default(false)
-  maintenance_mode Boolean @default(false)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  deleted_at      DateTime?
+  id               Int       @id @default(autoincrement())
+  app_label        String
+  app_type         String // "android" | "ios"
+  app_version      Int
+  force_updates    Boolean   @default(false)
+  maintenance_mode Boolean   @default(false)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  deleted_at       DateTime?
 }
 
 model AppVariable {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
   value      String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
   deleted_at DateTime?
 }
 
 model AppMenuLink {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique // e.g. about_us
+  id         Int       @id @default(autoincrement())
+  name       String    @unique // e.g. about_us
   show_name  String
-  for        String   // "user" | "admin"
-  type       String   // e.g. ckeditor
+  for        String // "user" | "admin"
+  type       String // e.g. ckeditor
   value      String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
   deleted_at DateTime?
 }
 
@@ -254,33 +249,93 @@ model Notification {
   read       Boolean  @default(false)
   created_at DateTime @default(now())
 
-  user       User     @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 }
 
 model Media {
-  id                   BigInt    @id @default(autoincrement())
-  model_type           String
-  model_id             Int
-  uuid                 String?   @unique @db.Char(36)
-  collection_name      String
-  name                 String
-  file_name            String
-  mime_type            String?
-  disk                 String
-  conversions_disk     String?
-  size                 BigInt
-  manipulations        String     @db.LongText
-  custom_properties    String     @db.LongText
+  id                    BigInt    @id @default(autoincrement())
+  model_type            String
+  model_id              Int
+  uuid                  String?   @unique @db.Char(36)
+  collection_name       String
+  name                  String
+  file_name             String
+  mime_type             String?
+  disk                  String
+  conversions_disk      String?
+  size                  BigInt
+  manipulations         String    @db.LongText
+  custom_properties     String    @db.LongText
   generated_conversions String    @db.LongText
-  responsive_images    String     @db.LongText
-  order_column         Int?
-  created_at           DateTime?  @default(now())
-  updated_at           DateTime?  @updatedAt
+  responsive_images     String    @db.LongText
+  order_column          Int?
+  created_at            DateTime? @default(now())
+  updated_at            DateTime? @updatedAt
 
-  user                  User       @relation(fields: [model_id], references: [id])
-  
+  user User @relation(fields: [model_id], references: [id])
+
   @@map("media")
-
 }
 
+// --- RBAC core tables ---
+model Permission {
+  id        BigInt    @id @default(autoincrement()) @map("id")
+  name      String    @db.VarChar(191)
+  guardName String    @map("guard_name") @db.VarChar(191)
+  createdAt DateTime? @map("created_at")
+  updatedAt DateTime? @map("updated_at")
 
+  roleLinks RoleHasPermission[] @relation("PermissionToRoleLinks")
+
+  @@unique([name, guardName], map: "permissions_name_guard_name_unique")
+  @@map("permissions")
+}
+
+model Role {
+  id           BigInt    @id @default(autoincrement()) @map("id")
+  name         String    @db.VarChar(191)
+  guardName    String    @map("guard_name") @db.VarChar(191)
+  // custom polymorphic scope in your schema:
+  roleableId   BigInt?   @map("roleable_id")
+  roleableType String?   @map("roleable_type") @db.VarChar(191)
+  createdAt    DateTime? @map("created_at")
+  updatedAt    DateTime? @map("updated_at")
+
+  permLinks RoleHasPermission[] @relation("RoleToPermissionLinks")
+
+  @@unique([name, guardName], map: "roles_name_guard_name_unique")
+  @@index([roleableId, roleableType], map: "roles_roleable_index")
+  @@map("roles")
+}
+
+model RoleHasPermission {
+  permissionId BigInt
+  roleId       BigInt
+
+  role       Role       @relation("RoleToPermissionLinks", fields: [roleId], references: [id], map: "role_has_permissions_role_id_foreign")
+  permission Permission @relation("PermissionToRoleLinks", fields: [permissionId], references: [id], map: "role_has_permissions_permission_id_foreign")
+
+  @@id([permissionId, roleId])
+  @@map("role_has_permissions")
+}
+
+// Polymorphic assignment tables (no FK because model_type varies)
+model ModelHasRole {
+  roleId    BigInt @map("role_id")
+  modelType String @map("model_type") @db.VarChar(191)
+  modelId   BigInt @map("model_id")
+
+  @@id([roleId, modelId, modelType])
+  @@index([modelId, modelType], map: "model_has_roles_model_id_model_type_index")
+  @@map("model_has_roles")
+}
+
+model ModelHasPermission {
+  permissionId BigInt @map("permission_id")
+  modelType    String @map("model_type") @db.VarChar(191)
+  modelId      BigInt @map("model_id")
+
+  @@id([permissionId, modelId, modelType])
+  @@index([modelId, modelType], map: "model_has_permissions_model_id_model_type_index")
+  @@map("model_has_permissions")
+}
