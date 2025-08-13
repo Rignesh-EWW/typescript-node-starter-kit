@@ -47,7 +47,10 @@ export const getAllUsers = async (
   }
 
   return prisma.user.findMany({
-    where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+    where: {
+      ...(Object.keys(whereClause).length > 0 ? whereClause : {}),
+      deleted_at: null,
+    },
     orderBy: { created_at: "desc" },
     skip: offset,
     take: limit,
