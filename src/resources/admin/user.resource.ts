@@ -1,3 +1,5 @@
+const config = require("../../../config");
+
 export const formatUserForAdmin = (u: any) => ({
   id: u.id,
   name: u.name,
@@ -7,7 +9,7 @@ export const formatUserForAdmin = (u: any) => ({
   gender: u.gender,
   wallet_balance: u.wallet_balance,
   profile_image: u.profile_image
-    ? `${process.env.BASE_URL}${u.profile_image}`
+    ? `${config.app.baseUrl}${u.profile_image}`
     : null,
   notifications_enabled: u.notifications_enabled,
   created_at: u.created_at,

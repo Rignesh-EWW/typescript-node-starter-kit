@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
+const config = require("../../config");
 
 export const mailTransport = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
+  host: config.smtp.host,
+  port: config.smtp.port,
   secure: false,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: config.smtp.user,
+    pass: config.smtp.pass,
   },
 });

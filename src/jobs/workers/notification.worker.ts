@@ -2,12 +2,13 @@ import { Worker } from "bullmq";
 import { createClient } from "redis";
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../../config");
 
 let connection: any = null;
 let notificationWorker: any = null;
 
 if (isProduction) {
-  connection = createClient({ url: process.env.REDIS_URL });
+  connection = createClient({ url: config.db.redisUrl });
   notificationWorker = new Worker(
     "notification",
     async (job) => {

@@ -1,15 +1,16 @@
 // Conditional Redis import to avoid connection attempts in development
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../config");
 
 let redisClient: any = null;
 
 if (isProduction) {
   const Redis = require("ioredis");
   redisClient = new Redis({
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-    password: process.env.REDIS_PASSWORD || undefined,
+    host: config.db.host,
+    port: config.db.port,
+    password: config.db.password,
   });
   logger.info("✅ Redis client created for production");
 } else {

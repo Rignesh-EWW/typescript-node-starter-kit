@@ -9,6 +9,7 @@ import type {
 } from "@/config/media-collections";
 import { createStorage } from "@/config/storage.config";
 import { mediaCollections } from "@/config/media-collections";
+const config = require("../../config");
 
 export interface UploadedFile {
   buffer: Buffer;
@@ -106,7 +107,7 @@ export class MediaService {
         name: opts.name ?? opts.file.originalname,
         file_name: fileName,
         mime_type: opts.file.mimetype,
-        disk: process.env.STORAGE_DRIVER || "local",
+        disk: config.storage.driver,
         size: BigInt(opts.file.size),
         manipulations: "{}",
         custom_properties: JSON.stringify(opts.customProperties ?? {}),
@@ -141,7 +142,7 @@ export class MediaService {
         name: opts.name ?? opts.fileName,
         file_name: opts.fileName,
         mime_type: opts.mimeType,
-        disk: opts.disk ?? process.env.STORAGE_DRIVER ?? "local",
+        disk: opts.disk ?? config.storage.driver,
         size: BigInt(opts.size),
         manipulations: "{}",
         custom_properties: JSON.stringify(opts.customProperties ?? {}),

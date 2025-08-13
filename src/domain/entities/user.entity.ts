@@ -1,8 +1,9 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import fs from "fs";
 import path from "path";
+const config = require("../../../config");
 
-const BASE_URL = process.env.BASE_URL || "";
+const BASE_URL = config.app.baseUrl || "";
 export class UserEntity {
   constructor(
     public readonly id: number,

@@ -4,12 +4,13 @@ import { sendEmail } from "@utils/mailer";
 import { userWelcomeEmail } from "@/templates/mail/userWelcomeEmail";
 import { isProduction } from "@/config/env";
 import { logger } from "@/utils/logger";
+const config = require("../../../config");
 
 let connection: any = null;
 let emailWorker: any = null;
 
 if (isProduction) {
-  connection = createClient({ url: process.env.REDIS_URL });
+  connection = createClient({ url: config.db.redisUrl });
   emailWorker = new Worker(
     "email",
     async (job) => {
