@@ -22,6 +22,7 @@ import {
 import { saveBase64Image } from "@utils/fileUpload";
 import path from "path";
 import { ProfileMessages } from "@/constants/profile";
+import { mediaService, UploadedFile } from "@/services/media.service";
 
 export const getProfile = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -191,6 +192,36 @@ export const updateNotification = asyncHandler(
         req.translator.t(ProfileMessages.NotificationsUpdatedSuccess),
         formatUserResponse(updatedUser)
       )
+    );
+  }
+);
+
+export const uploadProfilePicture = asyncHandler(
+  async (req: Request, res: Response) => {
+    const file = (req as any).file as UploadedFile | undefined;
+    console.log(file);
+    if (!file) {
+      return res.status(400).json(error("Profile picture file is required"));
+    }
+
+    const userId = req.user?.id!;
+
+    const media = await mediaService.attachFile({
+      file,
+      modelType: "user",
+      modelId: userId, // from auth middleware
+      collection: "profile",
+    });
+
+    await updateUserById(userId, {
+      profile_image: mediaService.urlFor(media),
+    });
+
+    res.json(
+      success("Profile picture uploaded", {
+        id: Number(media.id),
+        url: mediaService.urlFor(media),
+      })
     );
   }
 );

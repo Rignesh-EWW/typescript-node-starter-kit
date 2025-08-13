@@ -268,10 +268,10 @@ model Media {
   disk                 String
   conversions_disk     String?
   size                 BigInt
-  manipulations        String     @db.LongText @default("{}")
-  custom_properties    String     @db.LongText @default("{}")
-  generated_conversions String    @db.LongText @default("{}")
-  responsive_images    String     @db.LongText @default("{}")
+  manipulations        String     @db.LongText
+  custom_properties    String     @db.LongText
+  generated_conversions String    @db.LongText
+  responsive_images    String     @db.LongText
   order_column         Int?
   created_at           DateTime?  @default(now())
   updated_at           DateTime?  @updatedAt

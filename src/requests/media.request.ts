@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const UploadMediaSchema = z.object({
   model_type: z.string().min(1),

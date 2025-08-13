@@ -4,6 +4,7 @@ import {
   updateLanguage,
   updateNotification,
   updateProfile,
+  uploadProfilePicture,
 } from "@/controllers/user/profile.controller";
 import { requireUserAuth } from "@/middlewares/authMiddleware";
 import { logRoute } from "@/decorators/logRoute";
@@ -23,6 +24,12 @@ router.post(
   requireUserAuth,
   validateRequest({ body: UpdateProfileRequestSchema }),
   updateProfile
+);
+router.post(
+  "/uploadProfilePicture",
+  logRoute("USER_UPDATE"),
+  requireUserAuth,
+  uploadProfilePicture
 );
 router.post(
   "/update/language",
