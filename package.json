@@ -15,6 +15,7 @@
     "prisma:studio": "npx prisma studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.546.0",
     "@bull-board/api": "^4.10.0",
     "@bull-board/express": "^4.10.0",
     "@prisma/client": "^6.10.1",
@@ -38,16 +39,15 @@
     "json2csv": "^6.0.0-alpha.2",
     "multer": "^2.0.2",
     "nodemailer": "^6.10.1",
+    "pdfkit": "^0.17.1",
     "redis": "^4.6.7",
     "sharp": "^0.34.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "zod": "^3.22.4",
-    "multer": "^1.4.5-lts.1",
-    "@aws-sdk/client-s3": "^3.546.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@json2csv/node": "^7.0.6",
@@ -55,6 +55,7 @@
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.17.7",
     "@types/jest": "^29.5.12",
+    "@types/multer": "^1.4.11",
     "@types/node": "^20.11.30",
     "@types/socket.io": "^3.0.1",
     "@types/supertest": "^2.0.12",
@@ -68,8 +69,7 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5",
     "xlsx": "^0.18.5",
-    "yargs": "^17.7.2",
-    "@types/multer": "^1.4.11"
+    "yargs": "^17.7.2"
   },
   "engines": {
     "node": ">=18.0.0"

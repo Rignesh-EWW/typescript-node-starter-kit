@@ -13,6 +13,7 @@ import walletRoutes from "@/routes/user/wallet";
 import contactUsRoutes from "@/routes/user/contractUs";
 import chatRoutes from "@/routes/user/chat";
 import trackRoutes from "@/routes/user/tracking";
+import invoiceRoutes from "@/routes/user/invoice";
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use("/", walletRoutes);
 router.use("/", contactUsRoutes);
 router.use("/", chatRoutes);
 router.use("/", trackRoutes);
+router.use("/", invoiceRoutes);
 
 export default router;

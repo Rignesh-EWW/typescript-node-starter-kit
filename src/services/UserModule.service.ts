@@ -94,7 +94,6 @@ export const createUser = async (data: any, file?: Express.Multer.File) => {
       password: hashedPassword,
       device_type: data.device_type || "web",
       device_token: data.device_token || "",
-      profile_image: profileImagePath,
       status: true,
       language: "en",
       wallet_balance: new Decimal(0.0),
@@ -125,7 +124,7 @@ export const updateUserById = async (
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, phone: true, profile_image: true },
+      select: { id: true, email: true, phone: true },
     });
 
     if (!existingUser) {
@@ -179,18 +178,17 @@ export const updateUserById = async (
     // Handle profile image upload
     if (file || data.profile_image) {
       // Delete old profile image if it exists
-      if (existingUser.profile_image) {
-        await deleteFile(existingUser.profile_image);
-      }
-
+      // if (existingUser.profile_image) {
+      //   await deleteFile(existingUser.profile_image);
+      // }
       // Set new profile image path
-      if (file) {
-        // File uploaded via multer
-        updateData.profile_image = `uploads/profile_images/${file.filename}`;
-      } else if (data.profile_image) {
-        // Base64 image provided
-        updateData.profile_image = data.profile_image;
-      }
+      // if (file) {
+      //   // File uploaded via multer
+      //   updateData.profile_image = `uploads/profile_images/${file.filename}`;
+      // } else if (data.profile_image) {
+      //   // Base64 image provided
+      //   updateData.profile_image = data.profile_image;
+      // }
     }
 
     const updated = await prisma.user.update({
@@ -313,7 +311,7 @@ export const importUsersFromExcel = async (file: any) => {
             dob: user.dob ? new Date(user.dob) : null,
             gender: user.gender || "male",
             password: hashedPassword,
-            device_type: "web",
+            device_type: "android",
             device_token: "",
             status: true,
             language: "en",
