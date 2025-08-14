@@ -12,7 +12,11 @@
     "worker": "ts-node -r tsconfig-paths/register scripts/worker.ts",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
-    "prisma:studio": "npx prisma studio"
+    "prisma:studio": "npx prisma studio",
+    "rbac:create-role": "ts-node scripts/rbac.ts rbac:create-role",
+    "rbac:create-permission": "ts-node scripts/rbac.ts rbac:create-permission",
+    "rbac:give-permission-to-role": "ts-node scripts/rbac.ts rbac:give-permission-to-role",
+    "rbac:assign-role": "ts-node scripts/rbac.ts rbac:assign-role"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.546.0",

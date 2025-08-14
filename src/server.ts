@@ -27,6 +27,7 @@ import healthRoutes from "@/api/health.routes";
 import docsRoutes from "@/api/docs.routes";
 import bullBoardRoutes from "@/api/bull.routes";
 import resetViewRoutes from "@/routes/reset.view";
+import rbacRoutes from "@/api/rbac.routes";
 
 import type { Server } from "http";
 import path from "path";
@@ -114,6 +115,8 @@ export const startServer = async (): Promise<Server> => {
   // User routes
   app.use("/api/user", userRoutes);
   app.use("/api/admin", adminRoutes);
+  // RBAC routes
+  app.use("/api/rbac", rbacRoutes);
   // app.use("/api/docs", docsRoutes);
   // app.use("/api/admin/queues", bullBoardRoutes);
 
