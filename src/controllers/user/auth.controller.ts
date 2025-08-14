@@ -39,6 +39,7 @@ import { findUserByEmailResetToken } from "@/repositories/passwordResetToken.rep
 import { generateThumbnail, saveBase64Image } from "@utils/fileUpload";
 import fs, { existsSync } from "fs";
 import path from "path";
+import { mediaService, UploadedFile } from "@/services/media.service";
 
 const registerUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -51,7 +52,6 @@ const registerUser = asyncHandler(
       password,
       device_type,
       device_token,
-      profile_image,
     } = req.body;
 
     const emailVO = new Email(email);
@@ -72,18 +72,6 @@ const registerUser = asyncHandler(
         .status(409)
         .json(error(req.translator.t(AuthMessages.phoneExists)));
 
-    // Step 2: Handle base64 image upload
-    let uploadedFile = "";
-    if (profile_image) {
-      try {
-        uploadedFile = await saveBase64Image(profile_image, "profile_images");
-      } catch (err) {
-        return res
-          .status(400)
-          .json(error(req.translator.t(AuthMessages.invalidImage)));
-      }
-    }
-
     // Step 3: Hash password and create user
     const hashed = await hashPassword(passwordVO.getValue());
 
@@ -96,8 +84,17 @@ const registerUser = asyncHandler(
       password: hashed,
       device_type,
       device_token,
-      profile_image: uploadedFile,
     });
+
+    const file = (req as any).file as UploadedFile | undefined;
+    if (file) {
+      await mediaService.attachFile({
+        file,
+        modelType: "user",
+        modelId: Number(user.id),
+        collection: "profile_image",
+      });
+    }
 
     // Step 4: Trigger events and login
     appEmitter.emit(APP_EVENTS.USER_REGISTERED, {

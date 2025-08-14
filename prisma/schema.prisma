@@ -277,7 +277,6 @@ model Media {
   @@map("media")
 }
 
-// --- RBAC core tables ---
 model Permission {
   id        BigInt    @id @default(autoincrement()) @map("id")
   name      String    @db.VarChar(50)
@@ -285,7 +284,8 @@ model Permission {
   createdAt DateTime? @map("created_at")
   updatedAt DateTime? @map("updated_at")
 
-  roleLinks RoleHasPermission[] @relation("PermissionToRoleLinks")
+  roleLinks  RoleHasPermission[] @relation("PermissionToRoleLinks")
+  modelLinks ModelHasPermission[] @relation("PermissionToModelLinks")
 
   @@unique([name, guardName], map: "permissions_name_guard_name_unique")
   @@map("permissions")
@@ -295,13 +295,13 @@ model Role {
   id           BigInt    @id @default(autoincrement()) @map("id")
   name         String    @db.VarChar(50)
   guardName    String    @map("guard_name") @db.VarChar(50)
-  // custom polymorphic scope in your schema:
   roleableId   BigInt?   @map("roleable_id")
   roleableType String?   @map("roleable_type") @db.VarChar(191)
   createdAt    DateTime? @map("created_at")
   updatedAt    DateTime? @map("updated_at")
 
-  permLinks RoleHasPermission[] @relation("RoleToPermissionLinks")
+  permLinks  RoleHasPermission[] @relation("RoleToPermissionLinks")
+  modelLinks ModelHasRole[]      @relation("RoleToModelLinks")
 
   @@unique([name, guardName], map: "roles_name_guard_name_unique")
   @@index([roleableId, roleableType], map: "roles_roleable_index")
@@ -309,8 +309,8 @@ model Role {
 }
 
 model RoleHasPermission {
-  permissionId BigInt
-  roleId       BigInt
+  permissionId BigInt @map("permission_id")
+  roleId       BigInt @map("role_id")
 
   role       Role       @relation("RoleToPermissionLinks", fields: [roleId], references: [id], map: "role_has_permissions_role_id_foreign")
   permission Permission @relation("PermissionToRoleLinks", fields: [permissionId], references: [id], map: "role_has_permissions_permission_id_foreign")
@@ -319,11 +319,12 @@ model RoleHasPermission {
   @@map("role_has_permissions")
 }
 
-// Polymorphic assignment tables (no FK because model_type varies)
 model ModelHasRole {
   roleId    BigInt @map("role_id")
   modelType String @map("model_type") @db.VarChar(191)
   modelId   BigInt @map("model_id")
+
+  role Role @relation("RoleToModelLinks", fields: [roleId], references: [id], map: "model_has_roles_role_id_foreign")
 
   @@id([roleId, modelId, modelType])
   @@index([modelId, modelType], map: "model_has_roles_model_id_model_type_index")
@@ -334,6 +335,8 @@ model ModelHasPermission {
   permissionId BigInt @map("permission_id")
   modelType    String @map("model_type") @db.VarChar(191)
   modelId      BigInt @map("model_id")
+
+  permission Permission @relation("PermissionToModelLinks", fields: [permissionId], references: [id], map: "model_has_permissions_permission_id_foreign")
 
   @@id([permissionId, modelId, modelType])
   @@index([modelId, modelType], map: "model_has_permissions_model_id_model_type_index")
