@@ -22,13 +22,10 @@ const resolveScope = (scope?: TenantScope): TenantScope => {
   return {};
 };
 
-const buildRoleWhere = (
-  name: string,
-  guard: string,
-  scope: TenantScope
-) => {
+const buildRoleWhere = (name: string, guard: string, scope: TenantScope) => {
   const where: any = { name, guardName: guard };
-  if (scope.roleableId !== undefined) where.roleableId = BigInt(scope.roleableId);
+  if (scope.roleableId !== undefined)
+    where.roleableId = Number(scope.roleableId);
   if (scope.roleableType !== undefined) where.roleableType = scope.roleableType;
   return where;
 };
@@ -40,7 +37,9 @@ const cacheKey = (
   guard: string,
   scope: TenantScope
 ) =>
-  `${modelType}|${modelId}|${permission}|${guard}|${scope.roleableId ?? ""}:${scope.roleableType ?? ""}`;
+  `${modelType}|${modelId}|${permission}|${guard}|${scope.roleableId ?? ""}:${
+    scope.roleableType ?? ""
+  }`;
 
 const getCached = (key: string): boolean | undefined => {
   if (!cacheEnabled) return undefined;
@@ -117,19 +116,13 @@ export const findOrCreateRole = async (
   });
 };
 
-export const findPermissionByName = async (
-  name: string,
-  guard = "web"
-) => {
+export const findPermissionByName = async (name: string, guard = "web") => {
   return prisma.permission.findFirst({
     where: { name, guardName: guard },
   });
 };
 
-export const findOrCreatePermission = async (
-  name: string,
-  guard = "web"
-) => {
+export const findOrCreatePermission = async (name: string, guard = "web") => {
   const existing = await findPermissionByName(name, guard);
   if (existing) return existing;
   return prisma.permission.create({
@@ -468,13 +461,7 @@ export const can = async (
   scope?: TenantScope
 ): Promise<boolean> => {
   const s = resolveScope(scope);
-  const key = cacheKey(
-    modelType,
-    BigInt(modelId),
-    permissionName,
-    guard,
-    s
-  );
+  const key = cacheKey(modelType, BigInt(modelId), permissionName, guard, s);
   const cached = getCached(key);
   if (cached !== undefined) return cached;
 
@@ -534,10 +521,7 @@ export const authorize = async (
 };
 
 // F) Sync Utilities
-export const syncRbacState = async (
-  input: any,
-  options: any = {}
-) => {
+export const syncRbacState = async (input: any, options: any = {}) => {
   const {
     pruneExtraRoles,
     pruneExtraPermissions,
@@ -547,8 +531,8 @@ export const syncRbacState = async (
     dryRun,
   } = options;
 
-  const exec = async (cb: () => Promise<void>) => {
-    if (!dryRun) await cb();
+  const exec = async <T>(cb: () => Promise<T>): Promise<T | void> => {
+    if (!dryRun) return cb();
   };
 
   const roleMap = new Map<string, any>();
@@ -568,24 +552,19 @@ export const syncRbacState = async (
 
   for (const rp of input.rolePermissions || []) {
     await exec(() =>
-      givePermissionToRole(
-        rp.roleName,
-        rp.permissionName,
-        rp.guard || "web",
-        { roleableId: rp.roleableId ?? null, roleableType: rp.roleableType ?? null }
-      )
+      givePermissionToRole(rp.roleName, rp.permissionName, rp.guard || "web", {
+        roleableId: rp.roleableId ?? null,
+        roleableType: rp.roleableType ?? null,
+      })
     );
   }
 
   for (const mr of input.modelRoles || []) {
     await exec(() =>
-      assignRole(
-        mr.modelType,
-        mr.modelId,
-        mr.roleName,
-        mr.guard || "web",
-        { roleableId: mr.roleableId ?? null, roleableType: mr.roleableType ?? null }
-      )
+      assignRole(mr.modelType, mr.modelId, mr.roleName, mr.guard || "web", {
+        roleableId: mr.roleableId ?? null,
+        roleableType: mr.roleableType ?? null,
+      })
     );
   }
 
@@ -705,7 +684,9 @@ export const exportRbacState = async (filters: any = {}) => {
   const rolePermissions = await prisma.roleHasPermission.findMany({
     include: { role: true, permission: true },
   });
-  const modelRoles = await prisma.modelHasRole.findMany({ include: { role: true } });
+  const modelRoles = await prisma.modelHasRole.findMany({
+    include: { role: true },
+  });
   const modelPermissions = await prisma.modelHasPermission.findMany({
     include: { permission: true },
   });
@@ -750,8 +731,5 @@ export const syncFromFiles = async (
   const roles = JSON.parse(fs.readFileSync(roleFilePath, "utf8"));
   const permissions = JSON.parse(fs.readFileSync(permissionFilePath, "utf8"));
   const mappings = JSON.parse(fs.readFileSync(mappingsFilePath, "utf8"));
-  return syncRbacState(
-    { roles, permissions, ...mappings },
-    options
-  );
+  return syncRbacState({ roles, permissions, ...mappings }, options);
 };

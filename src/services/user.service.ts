@@ -23,7 +23,6 @@ export const createUser = async (data: {
   password: string;
   device_type: DeviceType;
   device_token: string;
-  profile_image: string;
 }) => {
   return prisma.user.create({
     data: {

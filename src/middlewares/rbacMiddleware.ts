@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCode } from "@/constants/statusCodes";
 import { error } from "@/utils/responseWrapper";
-import { hasRole, can, DEFAULT_MODEL_TYPE } from "@/services/rbac.service";
+import {
+  hasRole,
+  can,
+  DEFAULT_MODEL_TYPE,
+  hasAllRoles,
+  hasAllPermissions,
+} from "@/services/rbac.service";
 
 const getUser = (req: Request) => (req as any).user as { id?: number; modelType?: string } | undefined;
 
@@ -24,6 +30,26 @@ export const requireRole = (rolePipeOrArray: string | string[], guard = "web") =
   };
 };
 
+export const requireAllRoles = (
+  rolePipeOrArray: string | string[],
+  guard = "web",
+) => {
+  const roles = Array.isArray(rolePipeOrArray)
+    ? rolePipeOrArray
+    : rolePipeOrArray.split("|").map((r) => r.trim());
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const user = getUser(req);
+    if (!user?.id) {
+      return res.status(StatusCode.UNAUTHORIZED).json(error("Unauthorized"));
+    }
+    const modelType = user.modelType || DEFAULT_MODEL_TYPE;
+    if (await hasAllRoles(modelType, user.id, roles, guard)) {
+      return next();
+    }
+    return res.status(StatusCode.FORBIDDEN).json(error("Forbidden"));
+  };
+};
+
 export const requirePermission = (
   permPipeOrArray: string | string[],
   guard = "web"
@@ -41,6 +67,26 @@ export const requirePermission = (
       if (await can(modelType, user.id, perm, guard)) {
         return next();
       }
+    }
+    return res.status(StatusCode.FORBIDDEN).json(error("Forbidden"));
+  };
+};
+
+export const requireAllPermissions = (
+  permPipeOrArray: string | string[],
+  guard = "web",
+) => {
+  const perms = Array.isArray(permPipeOrArray)
+    ? permPipeOrArray
+    : permPipeOrArray.split("|").map((p) => p.trim());
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const user = getUser(req);
+    if (!user?.id) {
+      return res.status(StatusCode.UNAUTHORIZED).json(error("Unauthorized"));
+    }
+    const modelType = user.modelType || DEFAULT_MODEL_TYPE;
+    if (await hasAllPermissions(modelType, user.id, perms, guard)) {
+      return next();
     }
     return res.status(StatusCode.FORBIDDEN).json(error("Forbidden"));
   };
