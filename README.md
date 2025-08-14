@@ -33,6 +33,17 @@ src/                     # Application source
 prisma/                  # Prisma schema, migrations and seeds
 scripts/                 # Helper scripts (workers, CLI utilities)
 tests/                   # Jest + Supertest suites
+services/               # Independent microservice packages
+  auth/
+    src/
+  users/
+    src/
+  notifications/
+    src/
+  gateway/
+    src/
+  common/
+    src/
 ```
 
 ---
@@ -173,6 +184,26 @@ npm run dev
 ```
 
 `nodemon.json` watches the `src` folder and runs `ts-node` on changes.
+
+### Run All Microservices
+
+```bash
+npm run microservices
+```
+
+This starts the gateway, auth, users and notifications services on ports 3000-3003.
+
+Each service relies on packages from the root `node_modules` folder. Run `npm install` once at the project root before starting the microservices.
+
+When running locally you can access each service directly:
+
+- Gateway: <http://localhost:3000>
+- Auth: <http://localhost:3001>
+- Users: <http://localhost:3002>
+- Notifications: <http://localhost:3003>
+
+Visiting the root URL of each service now returns a plain text message
+indicating which service is running instead of "Cannot GET /".
 
 ---
 
