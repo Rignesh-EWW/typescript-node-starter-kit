@@ -11,10 +11,12 @@ import { AdminPassword } from "@/domain/valueObjects/adminPassword.vo";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { appEmitter, APP_EVENTS } from "@/events/emitters/appEmitter";
 import { issueAuthToken } from "@/utils/authToken";
-import { signJwt } from "@/utils/jwt";
+import { signJwt, verifyJwt } from "@/utils/jwt";
 import { success, error } from "@/utils/responseWrapper";
 import { sendEmail } from "@/utils/mailer";
 import { invalidateAuthToken } from "@/utils/authToken";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 export const loginAdmin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -73,7 +75,8 @@ export const forgotPassword = asyncHandler(
     });
 
     const baseUrl =
-      process.env.ADMIN_RESET_PASSWORD_URL || "http://localhost:3000";
+      process.env.ADMIN_RESET_PASSWORD_URL ||
+      "http://localhost:5173/reset-password";
     const resetLink = `${baseUrl}?token=${resetToken}`;
 
     const emailHtml = `
@@ -90,6 +93,33 @@ export const forgotPassword = asyncHandler(
       html: emailHtml,
     });
 
+    await prisma.passwordResetToken.create({
+      data: {
+        email: admin.email,
+        token: resetToken,
+        expires_at: new Date(Date.now() + 1000 * 60 * 60),
+      },
+    });
+
     return res.json(success("Password reset email sent successfully"));
+  }
+);
+
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+    const decoded = verifyJwt(token) as { email: string };
+    if (!decoded) return res.status(401).json(error(AdminMessages.notFound));
+
+    const admin = await findAdminByEmail(decoded.email as string);
+    if (!admin) return res.status(404).json(error(AdminMessages.notFound));
+
+    const hashedPassword = await hashPassword(password);
+    await prisma.admin.update({
+      where: { id: admin.id },
+      data: { password: hashedPassword },
+    });
+
+    return res.json(success("Password reset successfully"));
   }
 );

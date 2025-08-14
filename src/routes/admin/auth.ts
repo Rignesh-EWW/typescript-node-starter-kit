@@ -3,6 +3,7 @@ import {
   forgotPassword,
   loginAdmin,
   logout,
+  resetPassword,
 } from "@/controllers/admin/auth.controller";
 import { AdminLoginRequestSchema } from "@/requests/admin/auth.request";
 import validateRequest from "@/middlewares/validateRequest";
@@ -23,6 +24,8 @@ router.post(
   logRoute("ADMIN_FORGOT_PASSWORD"),
   forgotPassword
 );
+
+router.post("/reset-password", logRoute("ADMIN_RESET_PASSWORD"), resetPassword);
 
 router.get("/logout", logRoute("ADMIN_LOGOUT"), requireAdminAuth, logout);
 
