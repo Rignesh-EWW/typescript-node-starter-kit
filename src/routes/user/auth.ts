@@ -15,12 +15,15 @@ import { logAppleRoute } from "@/middlewares/logRouteMiddleware";
 import { SendOtpRequestSchema } from "@/requests/user/auth.request";
 import { ForgotPasswordSchema } from "@/requests/user/auth.request";
 import { requireAuth, requireUserAuth } from "@/middlewares/authMiddleware";
+import multer from "multer";
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
   "/auth/register",
   requireAuth,
+  upload.single("profile_image"),
   validateRequest({ body: RegisterRequestSchema }),
   authenticationController.registerUser
 );

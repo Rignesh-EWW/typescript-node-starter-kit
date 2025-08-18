@@ -10,7 +10,6 @@ export const RegisterRequestSchema = z.object({
   device_token: z.string().min(6),
   dob: z.coerce.date(),
   gender: z.nativeEnum(Gender),
-  profile_image: z.string().min(6),
 });
 
 export const LoginRequestSchema = z.object({

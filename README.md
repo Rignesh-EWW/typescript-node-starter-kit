@@ -61,6 +61,76 @@ npm run dev
 
 ---
 
+## 🛡️ Role & Permission Middleware
+
+Built-in middleware makes it easy to guard routes using roles and permissions.
+
+```ts
+import {
+  requireRole,
+  requireAllRoles,
+  requirePermission,
+  requireAllPermissions,
+  roleOrPermission,
+} from "@/middlewares/rbacMiddleware";
+
+// User must have any of the roles
+app.get("/admin", requireRole("admin|moderator"), handler);
+
+// User must have all listed roles
+app.post(
+  "/manage",
+  requireAllRoles(["editor", "approver"]),
+  handler,
+);
+
+// User must have any of the permissions
+app.delete(
+  "/posts",
+  requirePermission("delete posts|force delete posts"),
+  handler,
+);
+
+// User must have all listed permissions
+app.put(
+  "/posts",
+  requireAllPermissions(["edit posts", "publish posts"]),
+  handler,
+);
+
+// User must have either the role or the permission
+app.get("/reports", roleOrPermission("admin|view reports"), handler);
+```
+
+These helpers mirror the expressive style of Laravel's Spatie package while
+keeping the API lightweight.
+
+### Using middleware with Express routers
+
+You can also protect entire route groups by applying the middleware to an
+`express.Router`, similar to Laravel's route middleware:
+
+```ts
+import { Router } from "express";
+import { requireRole, requirePermission } from "@/middlewares/rbacMiddleware";
+
+const admin = Router();
+
+// Restrict all routes in this group to admin users
+admin.use(requireRole("admin"));
+
+// Further protect individual routes with permissions
+admin.post(
+  "/users",
+  requirePermission("create users|edit users"),
+  createUserHandler,
+);
+
+export default admin;
+```
+
+---
+
 ## ✅ Modules Implemented
 
 ### 👤 Users

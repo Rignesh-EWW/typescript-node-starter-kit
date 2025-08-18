@@ -5,7 +5,6 @@ import {
   toggleUserStatus,
   softDeleteUser,
   createUser,
-  upload,
   getUserById,
 } from "@/services/UserModule.service";
 import {
@@ -63,45 +62,35 @@ export const getUserByIdHandler = asyncHandler(
 export const createUserHandler = asyncHandler(
   async (req: Request, res: Response) => {
     // Handle file upload first
-    upload.single("profile_image")(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json(error(err.message));
-      }
 
-      try {
-        const body = CreateUserBodySchema.parse(req.body);
-        const user = await createUser(body, req.file);
-        return res.json(success("User created", formatUserForAdmin(user)));
-      } catch (err: any) {
-        return res.status(400).json(error((err as Error).message));
-      }
-    });
+    try {
+      const body = CreateUserBodySchema.parse(req.body);
+      const user = await createUser(body);
+      return res.json(success("User created", formatUserForAdmin(user)));
+    } catch (err: any) {
+      return res.status(400).json(error((err as Error).message));
+    }
   }
 );
 
 export const updateUserHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     // Handle file upload first
-    upload.single("profile_image")(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json(error(err.message));
-      }
 
-      try {
-        const { id } = UpdateUserParamSchema.parse(req.params);
-        const body = UpdateUserBodySchema.parse(req.body);
+    try {
+      const { id } = UpdateUserParamSchema.parse(req.params);
+      const body = UpdateUserBodySchema.parse(req.body);
 
-        const updated = await updateUserById(Number(id), body, req.file);
+      const updated = await updateUserById(Number(id), body, req.file);
 
-        logUserUpdated(Number(id));
+      logUserUpdated(Number(id));
 
-        return res.json(
-          success("User updated successfully", formatUserForAdmin(updated))
-        );
-      } catch (err: any) {
-        return res.status(400).json(error((err as Error).message));
-      }
-    });
+      return res.json(
+        success("User updated successfully", formatUserForAdmin(updated))
+      );
+    } catch (err: any) {
+      return res.status(400).json(error((err as Error).message));
+    }
   }
 );
 

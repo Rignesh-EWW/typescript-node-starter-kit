@@ -10,17 +10,8 @@ import { hashPassword } from "@/utils/hash";
 import { Parser } from "json2csv";
 import XLSX from "xlsx";
 import path from "path";
-import {
-  profileImageUpload,
-  deleteFile,
-  getFileExtension,
-  validateFile,
-} from "./multer.service";
 
 const prisma = new PrismaClient();
-
-// Export the multer upload for backward compatibility
-export const upload = profileImageUpload;
 
 export const getUserById = async (id: number) => {
   const user = await prisma.user.findUnique({
@@ -56,7 +47,7 @@ export interface UpdateUserData {
   notifications_enabled?: boolean;
 }
 
-export const createUser = async (data: any, file?: Express.Multer.File) => {
+export const createUser = async (data: any) => {
   try {
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -75,16 +66,6 @@ export const createUser = async (data: any, file?: Express.Multer.File) => {
 
     const hashedPassword = await hashPassword(data.password);
 
-    // Handle profile image upload
-    let profileImagePath: string | null = null;
-    if (file) {
-      // File uploaded via multer
-      profileImagePath = `uploads/profile_images/${file.filename}`;
-    } else if (data.profile_image) {
-      // Base64 image provided
-      profileImagePath = data.profile_image;
-    }
-
     const userData: Prisma.UserCreateInput = {
       name: data.name,
       email: data.email,
@@ -94,7 +75,6 @@ export const createUser = async (data: any, file?: Express.Multer.File) => {
       password: hashedPassword,
       device_type: data.device_type || "web",
       device_token: data.device_token || "",
-      profile_image: profileImagePath,
       status: true,
       language: "en",
       wallet_balance: new Decimal(0.0),
@@ -125,7 +105,7 @@ export const updateUserById = async (
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, phone: true, profile_image: true },
+      select: { id: true, email: true, phone: true },
     });
 
     if (!existingUser) {
@@ -175,23 +155,6 @@ export const updateUserById = async (
       updateData.device_token = data.device_token;
     if (data.notifications_enabled !== undefined)
       updateData.notifications_enabled = data.notifications_enabled;
-
-    // Handle profile image upload
-    if (file || data.profile_image) {
-      // Delete old profile image if it exists
-      if (existingUser.profile_image) {
-        await deleteFile(existingUser.profile_image);
-      }
-
-      // Set new profile image path
-      if (file) {
-        // File uploaded via multer
-        updateData.profile_image = `uploads/profile_images/${file.filename}`;
-      } else if (data.profile_image) {
-        // Base64 image provided
-        updateData.profile_image = data.profile_image;
-      }
-    }
 
     const updated = await prisma.user.update({
       where: { id },
@@ -400,28 +363,4 @@ export const exportUsersToXLSX = async (users: any[]) => {
 export const generateExportFileName = (type: "csv" | "xlsx") => {
   const dateStr = new Date().toISOString().slice(0, 10);
   return `users_export_${dateStr}.${type}`;
-};
-
-// Helper function to delete profile image file (using multer service)
-export const deleteProfileImage = async (imagePath: string | null) => {
-  await deleteFile(imagePath);
-};
-
-// Helper function to get file extension from mimetype (using multer service)
-export const getFileExtensionFromMime = (mimetype: string): string => {
-  return getFileExtension(mimetype);
-};
-
-// Helper function to validate image file (using multer service)
-export const validateImageFile = (file: Express.Multer.File): boolean => {
-  const allowedMimes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ];
-  const maxSize = 5 * 1024 * 1024; // 5MB
-
-  return validateFile(file, allowedMimes, maxSize);
 };
