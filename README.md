@@ -33,6 +33,17 @@ src/                     # Application source
 prisma/                  # Prisma schema, migrations and seeds
 scripts/                 # Helper scripts (workers, CLI utilities)
 tests/                   # Jest + Supertest suites
+services/               # Independent microservice packages
+  auth/
+    src/
+  users/
+    src/
+  notifications/
+    src/
+  gateway/
+    src/
+  common/
+    src/
 ```
 
 ---
@@ -173,6 +184,14 @@ npm run dev
 ```
 
 `nodemon.json` watches the `src` folder and runs `ts-node` on changes.
+
+### Run All Microservices
+
+```bash
+npm run microservices
+```
+
+This starts the gateway, auth, users and notifications services on ports 3000-3003.
 
 ---
 
