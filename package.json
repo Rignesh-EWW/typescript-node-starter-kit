@@ -10,6 +10,7 @@
     "seed": "ts-node prisma/seed.ts",
     "test": "jest",
     "worker": "ts-node -r tsconfig-paths/register scripts/worker.ts",
+    "microservices": "ts-node scripts/start-services.ts",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:studio": "npx prisma studio",
