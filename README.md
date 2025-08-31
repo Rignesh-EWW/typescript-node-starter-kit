@@ -33,6 +33,17 @@ src/                     # Application source
 prisma/                  # Prisma schema, migrations and seeds
 scripts/                 # Helper scripts (workers, CLI utilities)
 tests/                   # Jest + Supertest suites
+services/               # Independent microservice packages
+  auth/
+    src/
+  users/
+    src/
+  notifications/
+    src/
+  gateway/
+    src/
+  common/
+    src/
 ```
 
 ---
