@@ -2,6 +2,8 @@
 
 A modular, scalable Node.js + TypeScript backend with clean architecture, Prisma ORM, Redis, Supertest, and admin/user separation — built for production-ready apps.
 
+**Package name:** `typescript-node-starter-kit`
+
 ---
 
 ## 🗂️ Folder Structure
@@ -159,7 +161,7 @@ npm start
 
 ### Health Check
 
-The server exposes a simple health check at `/api/health` that reports uptime and version information.
+The server exposes a simple health check at `/api/health` that reports the package name, uptime, and version information.
 
 ---
 
