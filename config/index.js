@@ -1,5 +1,6 @@
 require('dotenv/config');
 const path = require('path');
+const packageJson = require('../package.json');
 
 const config = {
   smtp: {
@@ -35,7 +36,8 @@ const config = {
     port: Number(process.env.PORT || 3000),
     url: process.env.APP_URL || "",
     nodeEnv: process.env.NODE_ENV || "development",
-    version: process.env.npm_package_version,
+    name: packageJson.name,
+    version: packageJson.version,
   },
   encryption: {
     key: process.env.ENCRYPTION_KEY,

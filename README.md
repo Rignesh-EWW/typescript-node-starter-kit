@@ -4,6 +4,8 @@ This project is an open source template for building robust APIs with Node.js. I
 
 Designed to be modular and scalable, the kit includes Redis backed sessions, a testing setup with Jest and Supertest, and a complete admin/user separation out of the box.
 
+**Package name:** `typescript-node-starter-kit` (see `package.json`)
+
 ---
 
 ## Directory Overview
@@ -308,7 +310,7 @@ npm start
 
 ### Health Check
 
-The server exposes `/api/health` to report uptime and version information.
+The server exposes `/api/health` to report uptime, package name, and version information.
 
 ---
 
